@@ -276,28 +276,6 @@ input {
   border: 1px solid var(--line);
 }
 
-.summary-box {
-  margin-top: 16px;
-  padding: 16px;
-  border-radius: 22px;
-  background:
-    linear-gradient(135deg, rgba(45, 122, 74, 0.08), rgba(255, 255, 255, 0.8)),
-    #fff;
-  border: 1px solid rgba(45, 122, 74, 0.16);
-}
-
-.summary-box strong {
-  display: block;
-  margin-bottom: 6px;
-  font-size: 1.22rem;
-}
-
-.summary-box p {
-  margin: 0;
-  color: var(--muted);
-  line-height: 1.6;
-}
-
 .save-hole-bar {
   display: flex;
   align-items: center;
@@ -350,7 +328,7 @@ input {
 
 .shot-row {
   display: grid;
-  grid-template-columns: 72px minmax(0, 1fr) 118px 44px;
+  grid-template-columns: 72px minmax(88px, 112px) minmax(0, 1fr) 44px;
   gap: 10px;
   align-items: center;
   padding: 12px;
@@ -373,7 +351,11 @@ input {
 
 .shot-row input[readonly] {
   background: #f6f3ed;
-  color: var(--muted);
+  color: var(--text);
+  text-align: center;
+  font-weight: 700;
+  padding: 12px 10px;
+  min-width: 0;
 }
 
 .icon-button {
@@ -498,5 +480,21 @@ input {
 
   .hole-grid {
     grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 420px) {
+  .shot-row {
+    grid-template-columns: 64px minmax(78px, 96px) minmax(0, 1fr) 44px;
+    gap: 8px;
+    padding: 10px;
+  }
+
+  .shot-label {
+    font-size: 0.86rem;
+  }
+
+  .shot-remainder {
+    font-size: 0.8rem;
   }
 }
