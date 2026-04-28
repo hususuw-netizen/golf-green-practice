@@ -107,10 +107,6 @@ function hideElement(element) {
   element.classList.add("hidden");
 }
 
-function showElement(element) {
-  element.classList.remove("hidden");
-}
-
 function isLoggedIn() {
   return state.profile.username.length > 0;
 }
