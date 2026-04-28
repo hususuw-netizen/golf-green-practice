@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>高爾夫上果嶺紀錄工具</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="app-shell">
+    <section class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow">Practice to Course</p>
+        <h1>高爾夫上果嶺紀錄工具</h1>
+        <p class="hero-text">在練習場逐桿輸入擊球距離，自動計算剩餘距離、是否進果嶺，並把 18 洞紀錄匯出給 Excel 使用。</p>
+      </div>
+    </section>
+
+    <section id="loginPanel" class="panel login-panel">
+      <div class="section-head">
+        <div>
+          <p class="section-kicker">登入</p>
+          <h2>依帳號名稱分開儲存資料</h2>
+        </div>
+      </div>
+      <div class="field">
+        <label for="usernameInput">帳號名稱</label>
+        <input id="usernameInput" type="text" maxlength="24" placeholder="例如：Eric">
+        <small>每個帳號會有自己的 18 洞紀錄與 Excel 匯出資料。</small>
+      </div>
+      <button id="loginButton" class="btn btn-primary" type="button">登入</button>
+      <div id="loginMessage" class="message is-error hidden"></div>
+    </section>
+
+    <section id="appPanel" class="hidden">
+      <section class="panel account-bar">
+        <div class="account-row">
+          <div>
+            <p class="section-kicker">使用者</p>
+            <strong id="welcomeText"></strong>
+          </div>
+          <button id="logoutButton" class="btn btn-soft" type="button">登出</button>
+        </div>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <span>已完成洞數</span>
+            <strong id="savedHolesValue">0 / 18</strong>
+          </div>
+          <div class="stat-card">
+            <span>平均上果嶺</span>
+            <strong id="averageGirValue">-</strong>
+          </div>
+        </div>
+        <div class="actions-row">
+          <button id="exportCsvButton" class="btn btn-accent" type="button">匯出 Excel CSV</button>
+        </div>
+        <div id="exportResult" class="message is-info hidden"></div>
+        <div id="profileMessage" class="message is-info hidden"></div>
+      </section>
+
+      <section class="panel selector-panel">
+        <div class="section-head">
+          <div>
+            <p class="section-kicker">球洞</p>
+            <h2>固定 Par 與球洞長度</h2>
+          </div>
+          <div class="switch-row">
+            <button class="range-tab active" type="button" data-page="front">前 9</button>
+            <button class="range-tab" type="button" data-page="back">後 9</button>
+          </div>
+        </div>
+        <div id="holeList" class="hole-grid"></div>
+      </section>
+
+      <section class="panel hole-panel">
+        <div class="hole-hero">
+          <div>
+            <p class="section-kicker">目前球洞</p>
+            <h2 id="editorTitle">第 1 洞</h2>
+            <p id="holeSubtitle" class="hero-text"></p>
+          </div>
+          <div class="hole-badges">
+            <div class="badge-card">
+              <span>Par</span>
+              <strong id="parValue">5</strong>
+            </div>
+            <div class="badge-card">
+              <span>長度</span>
+              <strong id="distanceValue">495 碼</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="input-stack">
+          <div class="field-card">
+            <div class="field">
+              <label for="greenDepthInput">果嶺深度（碼）</label>
+              <input id="greenDepthInput" type="number" min="1" max="80" placeholder="例如：28">
+              <small>用來判斷是否已進入果嶺範圍。</small>
+            </div>
+          </div>
+        </div>
+
+        <div class="shot-section">
+          <div class="section-head">
+            <div>
+              <p class="section-kicker">擊球距離</p>
+              <h2>一桿一桿輸入並確認</h2>
+            </div>
+            <button id="resetHoleButton" class="btn btn-soft" type="button">清除此洞</button>
+          </div>
+
+          <div class="shot-entry-card">
+            <div class="field">
+              <label for="shotDistanceInput">本桿擊球距離（碼）</label>
+              <input id="shotDistanceInput" type="number" min="1" max="999" placeholder="例如：170">
+              <small>輸入這一桿打了多遠，再按確定加入紀錄。</small>
+            </div>
+            <button id="confirmShotButton" class="btn btn-primary" type="button">確定這一桿</button>
+          </div>
+
+          <div id="shotList" class="shot-list"></div>
+          <div id="emptyShotNote" class="empty-note">還沒有擊球資料。每次輸入一桿距離後按「確定這一桿」，系統會自動判斷是剩餘距離、超出果嶺，還是已進果嶺。</div>
+          <div id="calcMessage" class="message is-warn hidden"></div>
+        </div>
+      </section>
+
+      <div id="saveHoleBar" class="save-hole-bar hidden">
+        <button id="saveHoleRecordButton" class="btn btn-primary" type="button">儲存此洞紀錄</button>
+        <span id="saveHoleHint">進入果嶺後可儲存本洞揮桿結果</span>
+      </div>
+
+      <section class="panel overview-panel">
+        <div class="section-head">
+          <div>
+            <p class="section-kicker">總表</p>
+            <h2>18 洞紀錄與揮桿次數</h2>
+          </div>
+          <div class="overview-total">
+            <span>總揮桿</span>
+            <strong id="totalShotsValue">0</strong>
+          </div>
+        </div>
+
+        <div id="overviewList" class="overview-list"></div>
+      </section>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
