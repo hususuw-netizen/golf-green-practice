@@ -34,7 +34,8 @@ body {
 }
 
 button,
-input {
+input,
+select {
   font: inherit;
 }
 
@@ -144,7 +145,22 @@ input {
   color: var(--text);
 }
 
-.field input:focus {
+.field select {
+  width: 100%;
+  min-height: 50px;
+  padding: 12px 44px 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background:
+    linear-gradient(45deg, transparent 50%, var(--brand-deep) 50%) calc(100% - 24px) calc(50% - 3px) / 8px 8px no-repeat,
+    linear-gradient(135deg, var(--brand-deep) 50%, transparent 50%) calc(100% - 18px) calc(50% - 3px) / 8px 8px no-repeat,
+    #fff;
+  color: var(--text);
+  appearance: none;
+}
+
+.field input:focus,
+.field select:focus {
   outline: 2px solid rgba(45, 122, 74, 0.16);
   border-color: rgba(45, 122, 74, 0.48);
 }
@@ -274,6 +290,28 @@ input {
   border-radius: 18px;
   background: linear-gradient(180deg, #fffdf9, #f6f5ef);
   border: 1px solid var(--line);
+}
+
+.summary-box {
+  margin-top: 16px;
+  padding: 16px;
+  border-radius: 22px;
+  background:
+    linear-gradient(135deg, rgba(45, 122, 74, 0.08), rgba(255, 255, 255, 0.8)),
+    #fff;
+  border: 1px solid rgba(45, 122, 74, 0.16);
+}
+
+.summary-box strong {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 1.22rem;
+}
+
+.summary-box p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.6;
 }
 
 .save-hole-bar {
