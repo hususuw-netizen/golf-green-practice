@@ -1,24 +1,31 @@
-const DEFAULT_HOLES = [
-  { hole: 1, par: 5, distance: 495 },
-  { hole: 2, par: 4, distance: 390 },
-  { hole: 3, par: 3, distance: 154 },
-  { hole: 4, par: 4, distance: 314 },
-  { hole: 5, par: 4, distance: 341 },
-  { hole: 6, par: 3, distance: 180 },
-  { hole: 7, par: 4, distance: 374 },
-  { hole: 8, par: 5, distance: 485 },
-  { hole: 9, par: 4, distance: 397 },
-  { hole: 10, par: 4, distance: 359 },
-  { hole: 11, par: 4, distance: 390 },
-  { hole: 12, par: 4, distance: 408 },
-  { hole: 13, par: 5, distance: 567 },
-  { hole: 14, par: 3, distance: 173 },
-  { hole: 15, par: 4, distance: 410 },
-  { hole: 16, par: 4, distance: 363 },
-  { hole: 17, par: 3, distance: 149 },
-  { hole: 18, par: 5, distance: 478 }
+const COURSES = [
+  {
+    id: "palm-lake",
+    name: "棕梠湖球場",
+    holes: [
+      { hole: 1, par: 5, distance: 495 },
+      { hole: 2, par: 4, distance: 390 },
+      { hole: 3, par: 3, distance: 154 },
+      { hole: 4, par: 4, distance: 314 },
+      { hole: 5, par: 4, distance: 341 },
+      { hole: 6, par: 3, distance: 180 },
+      { hole: 7, par: 4, distance: 374 },
+      { hole: 8, par: 5, distance: 485 },
+      { hole: 9, par: 4, distance: 397 },
+      { hole: 10, par: 4, distance: 359 },
+      { hole: 11, par: 4, distance: 390 },
+      { hole: 12, par: 4, distance: 408 },
+      { hole: 13, par: 5, distance: 567 },
+      { hole: 14, par: 3, distance: 173 },
+      { hole: 15, par: 4, distance: 410 },
+      { hole: 16, par: 4, distance: 363 },
+      { hole: 17, par: 3, distance: 149 },
+      { hole: 18, par: 5, distance: 478 }
+    ]
+  }
 ];
 
+const DEFAULT_COURSE_ID = COURSES[0].id;
 const USER_INDEX_KEY = "golf-users-index";
 const CURRENT_USER_KEY = "golf-current-user";
 const LEGACY_STORAGE_KEY = "golf-green-estimator";
@@ -27,9 +34,10 @@ const state = {
   page: "front",
   selectedHoleIndex: 0,
   profile: {
-    username: ""
+    username: "",
+    selectedCourseId: DEFAULT_COURSE_ID
   },
-  holes: []
+  courses: {}
 };
 
 const elements = {
@@ -45,6 +53,7 @@ const elements = {
   exportResult: document.getElementById("exportResult"),
   savedHolesValue: document.getElementById("savedHolesValue"),
   averageGirValue: document.getElementById("averageGirValue"),
+  courseSelect: document.getElementById("courseSelect"),
   holeList: document.getElementById("holeList"),
   tabs: Array.from(document.querySelectorAll(".range-tab")),
   editorTitle: document.getElementById("editorTitle"),
@@ -75,6 +84,16 @@ function makeDefaultHoleConfig(baseHole) {
   };
 }
 
+function createEmptyCourseState(course) {
+  return course.holes.map(makeDefaultHoleConfig);
+}
+
+function createDefaultCourseMap() {
+  return Object.fromEntries(
+    COURSES.map((course) => [course.id, createEmptyCourseState(course)])
+  );
+}
+
 function sanitizeNumber(value) {
   if (value === "" || value === null || value === undefined) {
     return "";
@@ -90,6 +109,29 @@ function normalizeUsername(username) {
 
 function getUserStorageKey(username) {
   return `golf-user-${normalizeUsername(username)}`;
+}
+
+function getCourseDefinition(courseId = state.profile.selectedCourseId) {
+  return COURSES.find((course) => course.id === courseId) || COURSES[0];
+}
+
+function currentCourseId() {
+  return state.profile.selectedCourseId || DEFAULT_COURSE_ID;
+}
+
+function currentCourseName() {
+  return getCourseDefinition().name;
+}
+
+function currentCourseHoles() {
+  if (!state.courses[currentCourseId()]) {
+    state.courses[currentCourseId()] = createEmptyCourseState(getCourseDefinition());
+  }
+  return state.courses[currentCourseId()];
+}
+
+function currentHole() {
+  return currentCourseHoles()[state.selectedHoleIndex];
 }
 
 function showMessage(target, text, className) {
@@ -109,10 +151,6 @@ function hideElement(element) {
 
 function isLoggedIn() {
   return state.profile.username.length > 0;
-}
-
-function currentHole() {
-  return state.holes[state.selectedHoleIndex];
 }
 
 function readJsonStorage(key, fallback) {
@@ -151,10 +189,27 @@ function ensureUserInIndex(username) {
   }
 }
 
+function hydrateCourseHoles(courseId, storedHoles) {
+  const course = getCourseDefinition(courseId);
+  return course.holes.map((baseHole, index) => {
+    const savedHole = storedHoles?.[index] || {};
+    return {
+      ...makeDefaultHoleConfig(baseHole),
+      greenDepth: sanitizeNumber(savedHole.greenDepth) || 28,
+      shotDistances: Array.isArray(savedHole.shotDistances)
+        ? savedHole.shotDistances.map((item) => sanitizeNumber(item)).filter((item) => item !== "")
+        : [],
+      lastEstimate: savedHole.lastEstimate || null,
+      savedRecord: savedHole.savedRecord || null
+    };
+  });
+}
+
 function createEmptyUserData(username) {
   return {
     username,
-    holes: DEFAULT_HOLES.map(makeDefaultHoleConfig),
+    selectedCourseId: DEFAULT_COURSE_ID,
+    courses: createDefaultCourseMap(),
     updatedAt: new Date().toISOString()
   };
 }
@@ -165,7 +220,8 @@ function migrateLegacyDataToUser(username) {
     return null;
   }
 
-  const holes = DEFAULT_HOLES.map((baseHole, index) => {
+  const legacyCourse = getCourseDefinition(DEFAULT_COURSE_ID);
+  const legacyHoles = legacyCourse.holes.map((baseHole, index) => {
     const savedHole = legacy?.holes?.[index] || {};
     let shotDistances = Array.isArray(savedHole.shotDistances) ? savedHole.shotDistances : [];
 
@@ -201,7 +257,11 @@ function migrateLegacyDataToUser(username) {
 
   return {
     username,
-    holes,
+    selectedCourseId: DEFAULT_COURSE_ID,
+    courses: {
+      ...createDefaultCourseMap(),
+      [DEFAULT_COURSE_ID]: legacyHoles
+    },
     updatedAt: new Date().toISOString()
   };
 }
@@ -210,20 +270,21 @@ function loadUserData(username) {
   const normalized = normalizeUsername(username);
   const stored = readJsonStorage(getUserStorageKey(normalized), null);
   if (stored) {
+    const hasCourseMap = stored.courses && typeof stored.courses === "object";
+    const selectedCourseId = COURSES.some((course) => course.id === stored.selectedCourseId)
+      ? stored.selectedCourseId
+      : DEFAULT_COURSE_ID;
+    const courses = Object.fromEntries(
+      COURSES.map((course) => {
+        const sourceHoles = hasCourseMap ? stored.courses?.[course.id] : course.id === DEFAULT_COURSE_ID ? stored.holes : null;
+        return [course.id, hydrateCourseHoles(course.id, sourceHoles)];
+      })
+    );
+
     return {
       username: normalized,
-      holes: DEFAULT_HOLES.map((baseHole, index) => {
-        const savedHole = stored?.holes?.[index] || {};
-        return {
-          ...makeDefaultHoleConfig(baseHole),
-          greenDepth: sanitizeNumber(savedHole.greenDepth) || 28,
-          shotDistances: Array.isArray(savedHole.shotDistances)
-            ? savedHole.shotDistances.map((item) => sanitizeNumber(item)).filter((item) => item !== "")
-            : [],
-          lastEstimate: savedHole.lastEstimate || null,
-          savedRecord: savedHole.savedRecord || null
-        };
-      }),
+      selectedCourseId,
+      courses,
       updatedAt: stored.updatedAt || ""
     };
   }
@@ -241,23 +302,26 @@ function saveCurrentUserData() {
   localStorage.setItem(CURRENT_USER_KEY, state.profile.username);
   writeJsonStorage(getUserStorageKey(state.profile.username), {
     username: state.profile.username,
-    holes: state.holes,
+    selectedCourseId: currentCourseId(),
+    courses: state.courses,
     updatedAt: new Date().toISOString()
   });
 }
 
 function applyUserData(userData) {
   state.profile.username = userData.username;
+  state.profile.selectedCourseId = userData.selectedCourseId || DEFAULT_COURSE_ID;
   state.page = "front";
   state.selectedHoleIndex = 0;
-  state.holes = userData.holes;
+  state.courses = userData.courses || createDefaultCourseMap();
 }
 
 function loadSession() {
   const currentUsername = normalizeUsername(localStorage.getItem(CURRENT_USER_KEY) || "");
   if (!currentUsername) {
     state.profile.username = "";
-    state.holes = DEFAULT_HOLES.map(makeDefaultHoleConfig);
+    state.profile.selectedCourseId = DEFAULT_COURSE_ID;
+    state.courses = createDefaultCourseMap();
     return;
   }
 
@@ -284,8 +348,8 @@ function validateHole(hole) {
       return `第 ${index + 1} 桿的擊球距離必須大於 0。`;
     }
 
-    if (shotDistance > hole.distance) {
-      return `第 ${index + 1} 桿的擊球距離不能大於球洞長度。`;
+    if (shotDistance > 600) {
+      return `第 ${index + 1} 桿的擊球距離不能超過 600 碼。`;
     }
   }
 
@@ -385,7 +449,7 @@ function syncGreenDepthToState() {
 }
 
 function getSavedRecords() {
-  return state.holes.filter((hole) => hole.savedRecord);
+  return currentCourseHoles().filter((hole) => hole.savedRecord);
 }
 
 function getAverageGir() {
@@ -436,8 +500,16 @@ function renderProfile() {
 
 function renderStats() {
   const savedRecords = getSavedRecords();
-  elements.savedHolesValue.textContent = `${savedRecords.length} / 18`;
+  const holeCount = currentCourseHoles().length;
+  elements.savedHolesValue.textContent = `${savedRecords.length} / ${holeCount}`;
   elements.averageGirValue.textContent = savedRecords.length > 0 ? `${getAverageGir()} 桿` : "-";
+}
+
+function renderCourseSelect() {
+  elements.courseSelect.innerHTML = COURSES.map((course) => `
+    <option value="${course.id}">${course.name}</option>
+  `).join("");
+  elements.courseSelect.value = currentCourseId();
 }
 
 function renderHoleTabs() {
@@ -447,8 +519,9 @@ function renderHoleTabs() {
 }
 
 function renderHoleList() {
+  const holes = currentCourseHoles();
   const start = state.page === "front" ? 0 : 9;
-  const pageHoles = state.holes.slice(start, start + 9);
+  const pageHoles = holes.slice(start, start + 9);
   elements.holeList.innerHTML = pageHoles.map((hole, index) => {
     const actualIndex = start + index;
     let statusText = `Par ${hole.par}`;
@@ -501,7 +574,7 @@ function renderSaveHoleBar() {
 function renderHoleEditor() {
   const hole = currentHole();
   elements.editorTitle.textContent = `第 ${hole.hole} 洞`;
-  elements.holeSubtitle.textContent = `White tee ${hole.distance} 碼`;
+  elements.holeSubtitle.textContent = `${currentCourseName()} White tee ${hole.distance} 碼`;
   elements.parValue.textContent = hole.par;
   elements.distanceValue.textContent = `${hole.distance} 碼`;
   elements.greenDepthInput.value = hole.greenDepth;
@@ -511,9 +584,10 @@ function renderHoleEditor() {
 }
 
 function renderOverview() {
-  const totalShots = state.holes.reduce((sum, hole) => sum + (hole.savedRecord ? hole.savedRecord.shots : 0), 0);
+  const holes = currentCourseHoles();
+  const totalShots = holes.reduce((sum, hole) => sum + (hole.savedRecord ? hole.savedRecord.shots : 0), 0);
   elements.totalShotsValue.textContent = String(totalShots);
-  elements.overviewList.innerHTML = state.holes.map((hole) => {
+  elements.overviewList.innerHTML = holes.map((hole) => {
     const resultText = hole.savedRecord ? hole.savedRecord.resultText : "尚無紀錄";
     const shotsText = hole.savedRecord ? `${hole.savedRecord.shots} 桿` : "-";
 
@@ -537,6 +611,7 @@ function renderAll() {
   }
 
   renderProfile();
+  renderCourseSelect();
   renderStats();
   renderHoleTabs();
   renderHoleList();
@@ -557,16 +632,18 @@ function downloadCsvFile(filename, content) {
 }
 
 function buildCsvContent() {
+  const holes = currentCourseHoles();
   const rows = [
     ["帳號", state.profile.username],
+    ["模擬球場", currentCourseName()],
     ["已完成洞數", String(getSavedRecords().length)],
     ["平均上果嶺", getAverageGir() ? `${getAverageGir()} 桿` : "-"],
-    ["總揮桿", String(state.holes.reduce((sum, hole) => sum + (hole.savedRecord ? hole.savedRecord.shots : 0), 0))],
+    ["總揮桿", String(holes.reduce((sum, hole) => sum + (hole.savedRecord ? hole.savedRecord.shots : 0), 0))],
     [],
-    ["洞別", "Par", "球洞長度(碼)", "果嶺深度(碼)", "是否已儲存", "揮桿次數", "結果", "逐桿距離"]
+    ["洞別", "Par", "球洞長度(碼)", "果嶺深度(碼)", "是否已儲存", "揮桿次數", "結果", "逐桿距離(碼)"]
   ];
 
-  state.holes.forEach((hole) => {
+  holes.forEach((hole) => {
     rows.push([
       String(hole.hole),
       String(hole.par),
@@ -587,12 +664,13 @@ function buildCsvContent() {
 function handleExportCsv() {
   const csvContent = buildCsvContent();
   const safeUsername = state.profile.username.replace(/[\\/:*?"<>|]/g, "_");
-  const filename = `${safeUsername}-golf-summary.csv`;
+  const safeCourseName = currentCourseName().replace(/[\\/:*?"<>|]/g, "_");
+  const filename = `${safeUsername}-${safeCourseName}-golf-summary.csv`;
   const url = downloadCsvFile(filename, csvContent);
   elements.exportResult.innerHTML = `CSV 已建立：<a href="${url}" download="${filename}">${filename}</a>。如果剛剛沒看到下載，請點這個檔名再下載一次。`;
   elements.exportResult.className = "message is-info";
   elements.exportResult.classList.remove("hidden");
-  showMessage(elements.profileMessage, `已匯出 ${state.profile.username} 的 Excel CSV。`, "is-info");
+  showMessage(elements.profileMessage, `已匯出 ${state.profile.username} 的 ${currentCourseName()} Excel CSV。`, "is-info");
 }
 
 function handleLogin() {
@@ -610,7 +688,7 @@ function handleLogin() {
   hideMessage(elements.loginMessage);
   hideMessage(elements.exportResult);
   renderAll();
-  showMessage(elements.profileMessage, `已登入 ${username}，資料將獨立儲存在此帳號下。`, "is-info");
+  showMessage(elements.profileMessage, `已登入 ${username}，資料會依帳號與模擬球場分開儲存。`, "is-info");
 }
 
 function handleConfirmShot() {
@@ -628,8 +706,8 @@ function handleConfirmShot() {
     return;
   }
 
-  if (shotDistance > hole.distance) {
-    showMessage(elements.calcMessage, "單桿擊球距離不能大於球洞長度。", "is-error");
+  if (shotDistance > 600) {
+    showMessage(elements.calcMessage, "單桿擊球距離不能超過 600 碼。", "is-error");
     return;
   }
 
@@ -659,14 +737,35 @@ function handleSaveHoleRecord() {
   renderHoleEditor();
   renderOverview();
   renderStats();
-  showMessage(elements.calcMessage, `已儲存 ${state.profile.username} 的第 ${hole.hole} 洞紀錄。`, "is-info");
+  showMessage(elements.calcMessage, `已儲存 ${state.profile.username} 在 ${currentCourseName()} 的第 ${hole.hole} 洞紀錄。`, "is-info");
+}
+
+function handleCourseChange() {
+  const nextCourseId = elements.courseSelect.value;
+  if (!COURSES.some((course) => course.id === nextCourseId)) {
+    return;
+  }
+
+  state.profile.selectedCourseId = nextCourseId;
+  state.page = "front";
+  state.selectedHoleIndex = 0;
+  if (!state.courses[nextCourseId]) {
+    state.courses[nextCourseId] = createEmptyCourseState(getCourseDefinition(nextCourseId));
+  }
+
+  hideMessage(elements.calcMessage);
+  hideMessage(elements.exportResult);
+  saveCurrentUserData();
+  renderAll();
+  showMessage(elements.profileMessage, `目前模擬球場已切換為 ${currentCourseName()}。`, "is-info");
 }
 
 function bindEvents() {
   elements.loginButton.addEventListener("click", handleLogin);
   elements.logoutButton.addEventListener("click", () => {
     state.profile.username = "";
-    state.holes = DEFAULT_HOLES.map(makeDefaultHoleConfig);
+    state.profile.selectedCourseId = DEFAULT_COURSE_ID;
+    state.courses = createDefaultCourseMap();
     localStorage.removeItem(CURRENT_USER_KEY);
     hideMessage(elements.profileMessage);
     hideMessage(elements.exportResult);
@@ -675,6 +774,7 @@ function bindEvents() {
   });
 
   elements.exportCsvButton.addEventListener("click", handleExportCsv);
+  elements.courseSelect.addEventListener("change", handleCourseChange);
 
   elements.tabs.forEach((tab) => {
     tab.addEventListener("click", () => {
@@ -715,10 +815,8 @@ function bindEvents() {
   });
 
   elements.resetHoleButton.addEventListener("click", () => {
-    const hole = currentHole();
-    hole.shotDistances = [];
-    hole.lastEstimate = null;
-    hole.savedRecord = null;
+    const course = getCourseDefinition();
+    currentCourseHoles()[state.selectedHoleIndex] = makeDefaultHoleConfig(course.holes[state.selectedHoleIndex]);
     elements.shotDistanceInput.value = "";
     hideMessage(elements.calcMessage);
     saveCurrentUserData();
