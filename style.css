@@ -3,14 +3,14 @@
   --bg: #f7f5ef;
   --surface: rgba(255, 255, 255, 0.95);
   --surface-soft: #fcfbf7;
-  --line: #ddd4c5;
-  --text: #1c2f20;
-  --muted: #6f7568;
+  --line: #cdbfae;
+  --text: #142518;
+  --muted: #516050;
   --brand: #2d7a4a;
   --brand-deep: #1f5d37;
   --accent: #f2dcc2;
   --accent-strong: #d7884a;
-  --info: #2b6487;
+  --info: #0066CC;
   --danger: #ae4747;
   --shadow: 0 20px 40px rgba(34, 43, 28, 0.08);
   --radius-xl: 28px;
@@ -28,9 +28,11 @@ body {
   margin: 0;
   font-family: "Segoe UI", "PingFang TC", "Noto Sans TC", sans-serif;
   color: var(--text);
+  font-size: 16px;
   background:
     radial-gradient(circle at top left, rgba(242, 220, 194, 0.7), transparent 28%),
     linear-gradient(180deg, #f8f1e8 0%, #f7f5ef 42%, #f3f7f0 100%);
+  -webkit-font-smoothing: antialiased;
 }
 
 button,
@@ -42,7 +44,7 @@ select {
 .app-shell {
   max-width: var(--max-width);
   margin: 0 auto;
-  padding: 18px 14px 40px;
+  padding: 16px 12px 48px;
 }
 
 .hero {
@@ -76,7 +78,7 @@ select {
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--accent-strong);
+  color: var(--brand);
 }
 
 .hero h1,
@@ -87,7 +89,7 @@ select {
 }
 
 .hero h1 {
-  font-size: 1.78rem;
+  font-size: 1.92rem;
 }
 
 .hero-text {
@@ -98,7 +100,7 @@ select {
 
 .panel {
   margin-top: 14px;
-  padding: 16px;
+  padding: 18px 16px;
   border-radius: var(--radius-xl);
   background: var(--surface);
   border: 1px solid rgba(221, 212, 197, 0.85);
@@ -119,6 +121,39 @@ select {
   margin-bottom: 14px;
 }
 
+.compact-head {
+  margin-top: 16px;
+}
+
+.compact-head h2 {
+  font-size: 1.1rem;
+}
+
+.toggle-icon-button {
+  width: 50px;
+  height: 50px;
+  border: 1.5px solid var(--line);
+  border-radius: 999px;
+  background: #f7f1e7;
+  color: var(--brand-deep);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+}
+
+.toggle-arrow {
+  display: inline-block;
+  font-size: 1.35rem;
+  line-height: 1;
+  transition: transform 0.18s ease;
+}
+
+.toggle-icon-button[aria-expanded="true"] .toggle-arrow {
+  transform: rotate(180deg);
+}
+
 .field {
   display: flex;
   flex-direction: column;
@@ -126,30 +161,32 @@ select {
 }
 
 .field label {
-  font-size: 0.92rem;
+  font-size: 0.96rem;
   font-weight: 700;
 }
 
 .field small {
   color: var(--muted);
-  line-height: 1.5;
+  line-height: 1.55;
 }
 
 .field input {
   width: 100%;
-  min-height: 50px;
-  padding: 12px 14px;
-  border: 1px solid var(--line);
+  min-height: 54px;
+  padding: 13px 14px;
+  border: 1.5px solid var(--line);
   border-radius: var(--radius-md);
   background: #fff;
   color: var(--text);
+  font-size: 1rem;
+  font-weight: 700;
 }
 
 .field select {
   width: 100%;
-  min-height: 50px;
+  min-height: 54px;
   padding: 12px 44px 12px 14px;
-  border: 1px solid var(--line);
+  border: 1.5px solid var(--line);
   border-radius: var(--radius-md);
   background:
     linear-gradient(45deg, transparent 50%, var(--brand-deep) 50%) calc(100% - 24px) calc(50% - 3px) / 8px 8px no-repeat,
@@ -161,7 +198,7 @@ select {
 
 .field input:focus,
 .field select:focus {
-  outline: 2px solid rgba(45, 122, 74, 0.16);
+  outline: 3px solid rgba(45, 122, 74, 0.2);
   border-color: rgba(45, 122, 74, 0.48);
 }
 
@@ -172,8 +209,22 @@ select {
   margin-top: 14px;
 }
 
+.stats-detail-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.stats-detail-label {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--muted);
+}
+
 .stat-card {
-  padding: 12px 14px;
+  padding: 14px;
   border-radius: 18px;
   background: #fffdf9;
   border: 1px solid var(--line);
@@ -188,7 +239,7 @@ select {
 .stat-card strong {
   display: block;
   margin-top: 4px;
-  font-size: 1.12rem;
+  font-size: 1.22rem;
 }
 
 .actions-row {
@@ -199,16 +250,19 @@ select {
 }
 
 .btn {
-  min-height: 46px;
+  min-height: 50px;
   border: 0;
   border-radius: 999px;
   padding: 0 18px;
   cursor: pointer;
+  font-weight: 800;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .btn-primary {
   color: #fff;
-  background: linear-gradient(135deg, var(--brand), var(--brand-deep));
+  background: linear-gradient(135deg, #0066CC, #0052a3);
 }
 
 .btn-soft {
@@ -221,6 +275,24 @@ select {
   background: linear-gradient(135deg, #f8e8d5, #f3d6b6);
 }
 
+.btn-emphasis {
+  color: #fff;
+  background: linear-gradient(135deg, #ef9b55, #d8722b);
+  box-shadow: 0 10px 20px rgba(216, 114, 43, 0.22);
+}
+
+.btn-danger {
+  color: #fff;
+  background: linear-gradient(135deg, #d96969, #b44343);
+  box-shadow: 0 10px 20px rgba(180, 67, 67, 0.2);
+}
+
+.btn-success {
+  color: #fff;
+  background: linear-gradient(135deg, #3e9a5e, #237245);
+  box-shadow: 0 10px 20px rgba(35, 114, 69, 0.2);
+}
+
 .switch-row {
   display: flex;
   gap: 8px;
@@ -230,7 +302,7 @@ select {
 }
 
 .range-tab {
-  min-height: 38px;
+  min-height: 42px;
   border: 0;
   border-radius: 999px;
   padding: 0 16px;
@@ -248,17 +320,20 @@ select {
 
 .hole-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
+  grid-template-columns: repeat(9, minmax(0, 1fr));
+  gap: 6px;
 }
 
 .hole-chip {
-  padding: 14px 10px;
-  border: 1px solid var(--line);
-  border-radius: 20px;
+  min-height: 46px;
+  padding: 8px 0;
+  border: 1.5px solid var(--line);
+  border-radius: 14px;
   background: #fffdf9;
-  text-align: left;
+  text-align: center;
   cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .hole-chip.active {
@@ -279,9 +354,15 @@ select {
   font-size: 0.82rem;
 }
 
+.hole-chip strong {
+  font-size: 0.92rem;
+  line-height: 1;
+}
+
 .hole-badges {
   display: flex;
   gap: 10px;
+  align-items: stretch;
 }
 
 .badge-card {
@@ -290,6 +371,13 @@ select {
   border-radius: 18px;
   background: linear-gradient(180deg, #fffdf9, #f6f5ef);
   border: 1px solid var(--line);
+}
+
+.hole-reset-button {
+  min-height: 38px;
+  padding: 0 12px;
+  white-space: nowrap;
+  font-size: 0.88rem;
 }
 
 .summary-box {
@@ -339,10 +427,25 @@ select {
 }
 
 .field-card {
-  padding: 14px;
-  border-radius: 20px;
+  max-width: 160px;
+  padding: 10px;
+  border-radius: 14px;
   background: var(--surface-soft);
   border: 1px solid var(--line);
+}
+
+#greenDepthPanel {
+  margin-top: 10px;
+}
+
+.field-card .field input {
+  min-height: 42px;
+  padding: 8px 10px;
+}
+
+.field-card .field label,
+.field-card .field small {
+  font-size: 0.82rem;
 }
 
 .shot-section {
@@ -353,10 +456,25 @@ select {
   display: grid;
   gap: 12px;
   margin-bottom: 14px;
-  padding: 14px;
+  padding: 16px;
   border-radius: 20px;
-  background: #fffdf9;
-  border: 1px solid var(--line);
+  background: #fff8f1;
+  border: 1.5px solid rgba(216, 114, 43, 0.28);
+  box-shadow: 0 10px 22px rgba(216, 114, 43, 0.08);
+}
+
+.shot-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 2px 0 10px;
+}
+
+.shot-toolbar-label {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--info);
 }
 
 .shot-list {
@@ -369,7 +487,7 @@ select {
   grid-template-columns: 72px minmax(88px, 112px) minmax(0, 1fr) 44px;
   gap: 10px;
   align-items: center;
-  padding: 12px;
+  padding: 14px 12px;
   border-radius: 18px;
   background: #fffdf9;
   border: 1px solid var(--line);
@@ -382,7 +500,7 @@ select {
 
 .shot-remainder {
   color: var(--brand-deep);
-  font-size: 0.86rem;
+  font-size: 0.92rem;
   font-weight: 700;
   text-align: right;
 }
@@ -405,6 +523,8 @@ select {
   color: #7e4120;
   cursor: pointer;
   font-size: 1rem;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .empty-note,
@@ -472,7 +592,7 @@ select {
   grid-template-columns: 64px 54px minmax(0, 1fr) 70px;
   gap: 10px;
   align-items: center;
-  padding: 12px;
+  padding: 14px 12px;
   border-radius: 18px;
   background: #fffdf9;
   border: 1px solid var(--line);
@@ -511,28 +631,41 @@ select {
   .app-shell {
     padding: 24px 18px 48px;
   }
-
-  .input-stack {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .hole-grid {
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-  }
 }
 
 @media (max-width: 420px) {
+  .panel {
+    padding: 16px 14px;
+  }
+
+  .hole-grid {
+    gap: 4px;
+  }
+
+  .hole-chip {
+    min-height: 42px;
+    border-radius: 12px;
+  }
+
+  .hole-chip strong {
+    font-size: 0.84rem;
+  }
+
   .shot-row {
     grid-template-columns: 64px minmax(78px, 96px) minmax(0, 1fr) 44px;
     gap: 8px;
-    padding: 10px;
+    padding: 12px 10px;
   }
 
   .shot-label {
-    font-size: 0.86rem;
+    font-size: 0.9rem;
   }
 
   .shot-remainder {
-    font-size: 0.8rem;
+    font-size: 0.86rem;
+  }
+
+  .btn {
+    min-height: 48px;
   }
 }
