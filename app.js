@@ -33,6 +33,9 @@ const LEGACY_STORAGE_KEY = "golf-green-estimator";
 const state = {
   page: "front",
   selectedHoleIndex: 0,
+  isStatsOpen: false,
+  isGreenDepthOpen: false,
+  isShotListExpanded: false,
   profile: {
     username: "",
     selectedCourseId: DEFAULT_COURSE_ID
@@ -52,7 +55,11 @@ const elements = {
   exportCsvButton: document.getElementById("exportCsvButton"),
   exportResult: document.getElementById("exportResult"),
   savedHolesValue: document.getElementById("savedHolesValue"),
-  averageGirValue: document.getElementById("averageGirValue"),
+  toggleStatsButton: document.getElementById("toggleStatsButton"),
+  statsDetailPanel: document.getElementById("statsDetailPanel"),
+  frontNineShotsValue: document.getElementById("frontNineShotsValue"),
+  backNineShotsValue: document.getElementById("backNineShotsValue"),
+  allShotsValue: document.getElementById("allShotsValue"),
   courseSelect: document.getElementById("courseSelect"),
   holeList: document.getElementById("holeList"),
   tabs: Array.from(document.querySelectorAll(".range-tab")),
@@ -60,6 +67,9 @@ const elements = {
   holeSubtitle: document.getElementById("holeSubtitle"),
   parValue: document.getElementById("parValue"),
   distanceValue: document.getElementById("distanceValue"),
+  toggleGreenDepthButton: document.getElementById("toggleGreenDepthButton"),
+  greenDepthPanel: document.getElementById("greenDepthPanel"),
+  toggleShotListButton: document.getElementById("toggleShotListButton"),
   greenDepthInput: document.getElementById("greenDepthInput"),
   shotDistanceInput: document.getElementById("shotDistanceInput"),
   confirmShotButton: document.getElementById("confirmShotButton"),
@@ -70,6 +80,7 @@ const elements = {
   saveHoleBar: document.getElementById("saveHoleBar"),
   saveHoleRecordButton: document.getElementById("saveHoleRecordButton"),
   saveHoleHint: document.getElementById("saveHoleHint"),
+  overviewTitle: document.getElementById("overviewTitle"),
   overviewList: document.getElementById("overviewList"),
   totalShotsValue: document.getElementById("totalShotsValue")
 };
@@ -77,11 +88,27 @@ const elements = {
 function makeDefaultHoleConfig(baseHole) {
   return {
     ...baseHole,
-    greenDepth: 28,
+    greenDepth: 20,
     shotDistances: [],
     lastEstimate: null,
     savedRecord: null
   };
+}
+
+function resolveGreenDepth(savedHole) {
+  const numeric = sanitizeNumber(savedHole.greenDepth);
+  const hasActivity = Array.isArray(savedHole.shotDistances) && savedHole.shotDistances.length > 0;
+  const hasSavedRecord = Boolean(savedHole.savedRecord);
+
+  if (numeric === "") {
+    return 20;
+  }
+
+  if (numeric === 28 && !hasActivity && !hasSavedRecord) {
+    return 20;
+  }
+
+  return numeric || 20;
 }
 
 function createEmptyCourseState(course) {
@@ -128,6 +155,12 @@ function currentCourseHoles() {
     state.courses[currentCourseId()] = createEmptyCourseState(getCourseDefinition());
   }
   return state.courses[currentCourseId()];
+}
+
+function currentPageRange() {
+  return state.page === "front"
+    ? { start: 0, end: 9, label: "前 9 洞" }
+    : { start: 9, end: 18, label: "後 9 洞" };
 }
 
 function currentHole() {
@@ -195,7 +228,7 @@ function hydrateCourseHoles(courseId, storedHoles) {
     const savedHole = storedHoles?.[index] || {};
     return {
       ...makeDefaultHoleConfig(baseHole),
-      greenDepth: sanitizeNumber(savedHole.greenDepth) || 28,
+      greenDepth: resolveGreenDepth(savedHole),
       shotDistances: Array.isArray(savedHole.shotDistances)
         ? savedHole.shotDistances.map((item) => sanitizeNumber(item)).filter((item) => item !== "")
         : [],
@@ -248,7 +281,7 @@ function migrateLegacyDataToUser(username) {
 
     return {
       ...makeDefaultHoleConfig(baseHole),
-      greenDepth: sanitizeNumber(savedHole.greenDepth) || 28,
+      greenDepth: resolveGreenDepth(savedHole),
       shotDistances: shotDistances.map((item) => sanitizeNumber(item)).filter((item) => item !== ""),
       lastEstimate: savedHole.lastEstimate || null,
       savedRecord: savedHole.savedRecord || null
@@ -499,10 +532,22 @@ function renderProfile() {
 }
 
 function renderStats() {
+  const holes = currentCourseHoles();
   const savedRecords = getSavedRecords();
-  const holeCount = currentCourseHoles().length;
+  const holeCount = holes.length;
+  const frontNineShots = holes.slice(0, 9).reduce((sum, hole) => sum + (hole.savedRecord ? hole.savedRecord.shots : 0), 0);
+  const backNineShots = holes.slice(9, 18).reduce((sum, hole) => sum + (hole.savedRecord ? hole.savedRecord.shots : 0), 0);
+  const allShots = frontNineShots + backNineShots;
+
   elements.savedHolesValue.textContent = `${savedRecords.length} / ${holeCount}`;
-  elements.averageGirValue.textContent = savedRecords.length > 0 ? `${getAverageGir()} 桿` : "-";
+  elements.frontNineShotsValue.textContent = String(frontNineShots);
+  elements.backNineShotsValue.textContent = String(backNineShots);
+  elements.allShotsValue.textContent = String(allShots);
+}
+
+function renderStatsDetailPanel() {
+  elements.statsDetailPanel.classList.toggle("hidden", !state.isStatsOpen);
+  elements.toggleStatsButton.setAttribute("aria-expanded", String(state.isStatsOpen));
 }
 
 function renderCourseSelect() {
@@ -533,9 +578,7 @@ function renderHoleList() {
 
     return `
       <button class="hole-chip ${actualIndex === state.selectedHoleIndex ? "active" : ""}" type="button" data-index="${actualIndex}">
-        <strong>第 ${hole.hole} 洞</strong>
-        <span>${hole.distance} 碼</span>
-        <span>${statusText}</span>
+        <strong>${hole.hole}</strong>
       </button>
     `;
   }).join("");
@@ -544,8 +587,10 @@ function renderHoleList() {
 function renderShotList() {
   const hole = currentHole();
   const trajectory = getTrajectory(hole);
+  const shouldCollapse = trajectory.length > 1 && !state.isShotListExpanded;
+  const visibleSteps = shouldCollapse ? [trajectory[trajectory.length - 1]] : trajectory;
   elements.emptyShotNote.classList.toggle("hidden", hole.shotDistances.length > 0);
-  elements.shotList.innerHTML = trajectory.map((step) => `
+  elements.shotList.innerHTML = visibleSteps.map((step) => `
     <div class="shot-row">
       <div class="shot-label">第 ${step.shotNumber} 桿</div>
       <div class="field">
@@ -555,6 +600,7 @@ function renderShotList() {
       <button class="icon-button remove-shot" type="button" data-shot-index="${step.shotNumber - 1}" aria-label="刪除這一桿">×</button>
     </div>
   `).join("");
+  renderShotListToggle(trajectory.length);
 }
 
 function renderSaveHoleBar() {
@@ -574,7 +620,7 @@ function renderSaveHoleBar() {
 function renderHoleEditor() {
   const hole = currentHole();
   elements.editorTitle.textContent = `第 ${hole.hole} 洞`;
-  elements.holeSubtitle.textContent = `${currentCourseName()} White tee ${hole.distance} 碼`;
+  elements.holeSubtitle.textContent = `${currentCourseName()} White tee`;
   elements.parValue.textContent = hole.par;
   elements.distanceValue.textContent = `${hole.distance} 碼`;
   elements.greenDepthInput.value = hole.greenDepth;
@@ -585,9 +631,12 @@ function renderHoleEditor() {
 
 function renderOverview() {
   const holes = currentCourseHoles();
-  const totalShots = holes.reduce((sum, hole) => sum + (hole.savedRecord ? hole.savedRecord.shots : 0), 0);
+  const { start, end, label } = currentPageRange();
+  const pageHoles = holes.slice(start, end);
+  const totalShots = pageHoles.reduce((sum, hole) => sum + (hole.savedRecord ? hole.savedRecord.shots : 0), 0);
+  elements.overviewTitle.textContent = `${label}紀錄與揮桿次數`;
   elements.totalShotsValue.textContent = String(totalShots);
-  elements.overviewList.innerHTML = holes.map((hole) => {
+  elements.overviewList.innerHTML = pageHoles.map((hole) => {
     const resultText = hole.savedRecord ? hole.savedRecord.resultText : "尚無紀錄";
     const shotsText = hole.savedRecord ? `${hole.savedRecord.shots} 桿` : "-";
 
@@ -602,6 +651,17 @@ function renderOverview() {
   }).join("");
 }
 
+function renderGreenDepthPanel() {
+  elements.greenDepthPanel.classList.toggle("hidden", !state.isGreenDepthOpen);
+  elements.toggleGreenDepthButton.setAttribute("aria-expanded", String(state.isGreenDepthOpen));
+}
+
+function renderShotListToggle(totalShots) {
+  const showToggle = totalShots > 1;
+  elements.toggleShotListButton.classList.toggle("hidden", !showToggle);
+  elements.toggleShotListButton.setAttribute("aria-expanded", String(state.isShotListExpanded));
+}
+
 function renderAll() {
   renderAppVisibility();
   if (!isLoggedIn()) {
@@ -613,9 +673,11 @@ function renderAll() {
   renderProfile();
   renderCourseSelect();
   renderStats();
+  renderStatsDetailPanel();
   renderHoleTabs();
   renderHoleList();
   renderHoleEditor();
+  renderGreenDepthPanel();
   renderOverview();
 }
 
@@ -713,6 +775,7 @@ function handleConfirmShot() {
 
   hole.shotDistances.push(shotDistance);
   hole.savedRecord = null;
+  state.isShotListExpanded = false;
   elements.shotDistanceInput.value = "";
   refreshEstimate();
 }
@@ -775,10 +838,23 @@ function bindEvents() {
 
   elements.exportCsvButton.addEventListener("click", handleExportCsv);
   elements.courseSelect.addEventListener("change", handleCourseChange);
+  elements.toggleStatsButton.addEventListener("click", () => {
+    state.isStatsOpen = !state.isStatsOpen;
+    renderStatsDetailPanel();
+  });
+  elements.toggleGreenDepthButton.addEventListener("click", () => {
+    state.isGreenDepthOpen = !state.isGreenDepthOpen;
+    renderGreenDepthPanel();
+  });
+  elements.toggleShotListButton.addEventListener("click", () => {
+    state.isShotListExpanded = !state.isShotListExpanded;
+    renderShotList();
+  });
 
   elements.tabs.forEach((tab) => {
     tab.addEventListener("click", () => {
       state.page = tab.dataset.page;
+      state.isShotListExpanded = false;
       if (state.page === "front" && state.selectedHoleIndex > 8) {
         state.selectedHoleIndex = 0;
       }
@@ -799,6 +875,7 @@ function bindEvents() {
     }
 
     state.selectedHoleIndex = Number(button.dataset.index);
+    state.isShotListExpanded = false;
     renderHoleList();
     renderHoleEditor();
     hideMessage(elements.calcMessage);
@@ -815,8 +892,14 @@ function bindEvents() {
   });
 
   elements.resetHoleButton.addEventListener("click", () => {
+    const shouldReset = window.confirm("要清除此洞的所有擊球紀錄嗎？");
+    if (!shouldReset) {
+      return;
+    }
+
     const course = getCourseDefinition();
     currentCourseHoles()[state.selectedHoleIndex] = makeDefaultHoleConfig(course.holes[state.selectedHoleIndex]);
+    state.isShotListExpanded = false;
     elements.shotDistanceInput.value = "";
     hideMessage(elements.calcMessage);
     saveCurrentUserData();
@@ -835,6 +918,9 @@ function bindEvents() {
     const shotIndex = Number(removeButton.dataset.shotIndex);
     currentHole().shotDistances.splice(shotIndex, 1);
     currentHole().savedRecord = null;
+    if (currentHole().shotDistances.length <= 1) {
+      state.isShotListExpanded = false;
+    }
     refreshEstimate();
   });
 
