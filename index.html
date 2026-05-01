@@ -47,8 +47,24 @@
             <strong id="savedHolesValue">0 / 18</strong>
           </div>
           <div class="stat-card">
-            <span>平均上果嶺</span>
-            <strong id="averageGirValue">-</strong>
+            <span>總桿數</span>
+            <strong id="allShotsValue">0</strong>
+          </div>
+        </div>
+        <div class="stats-detail-bar">
+          <span class="stats-detail-label">分段桿數</span>
+          <button id="toggleStatsButton" class="toggle-icon-button" type="button" aria-label="切換分段桿數" aria-expanded="false">
+            <span class="toggle-arrow">▾</span>
+          </button>
+        </div>
+        <div id="statsDetailPanel" class="stats-grid hidden">
+          <div class="stat-card">
+            <span>前 9 桿數</span>
+            <strong id="frontNineShotsValue">0</strong>
+          </div>
+          <div class="stat-card">
+            <span>後 9 桿數</span>
+            <strong id="backNineShotsValue">0</strong>
           </div>
         </div>
         <div class="actions-row">
@@ -75,7 +91,7 @@
         <div class="section-head">
           <div>
             <p class="section-kicker">球洞</p>
-            <h2>固定 Par 與球洞長度</h2>
+            <h2>選擇球洞</h2>
           </div>
           <div class="switch-row">
             <button class="range-tab active" type="button" data-page="front">前 9</button>
@@ -104,11 +120,21 @@
           </div>
         </div>
 
-        <div class="input-stack">
+        <div class="section-head compact-head">
+          <div>
+            <p class="section-kicker">果嶺設定</p>
+            <h2>果嶺深度（預設 20 碼）</h2>
+          </div>
+          <button id="toggleGreenDepthButton" class="toggle-icon-button" type="button" aria-label="切換果嶺深度設定" aria-expanded="false">
+            <span class="toggle-arrow">▾</span>
+          </button>
+        </div>
+
+        <div id="greenDepthPanel" class="input-stack hidden">
           <div class="field-card">
             <div class="field">
               <label for="greenDepthInput">果嶺深度（碼）</label>
-              <input id="greenDepthInput" type="number" min="1" max="80" placeholder="例如：28">
+              <input id="greenDepthInput" type="number" min="1" max="80" placeholder="20">
               <small>用來判斷是否已進入果嶺範圍。</small>
             </div>
           </div>
@@ -120,7 +146,7 @@
               <p class="section-kicker">擊球距離</p>
               <h2>一桿一桿輸入並確認</h2>
             </div>
-            <button id="resetHoleButton" class="btn btn-soft" type="button">清除此洞</button>
+            <button id="resetHoleButton" class="btn btn-danger hole-reset-button" type="button">清除此洞</button>
           </div>
 
           <div class="shot-entry-card">
@@ -129,7 +155,14 @@
               <input id="shotDistanceInput" type="number" min="1" max="999" placeholder="例如：170">
               <small>輸入這一桿打了多遠，再按確定加入紀錄。</small>
             </div>
-            <button id="confirmShotButton" class="btn btn-primary" type="button">確定這一桿</button>
+            <button id="confirmShotButton" class="btn btn-primary" type="button">✓ 確定這一桿</button>
+          </div>
+
+          <div class="shot-toolbar">
+            <span class="shot-toolbar-label">逐桿紀錄</span>
+            <button id="toggleShotListButton" class="toggle-icon-button hidden" type="button" aria-label="切換逐桿紀錄" aria-expanded="false">
+              <span class="toggle-arrow">▾</span>
+            </button>
           </div>
 
           <div id="shotList" class="shot-list"></div>
@@ -139,7 +172,7 @@
       </section>
 
       <div id="saveHoleBar" class="save-hole-bar hidden">
-        <button id="saveHoleRecordButton" class="btn btn-primary" type="button">儲存此洞紀錄</button>
+        <button id="saveHoleRecordButton" class="btn btn-success" type="button">儲存此洞紀錄</button>
         <span id="saveHoleHint">進入果嶺後可儲存本洞揮桿結果</span>
       </div>
 
@@ -147,7 +180,7 @@
         <div class="section-head">
           <div>
             <p class="section-kicker">總表</p>
-            <h2>18 洞紀錄與揮桿次數</h2>
+            <h2 id="overviewTitle">前 9 洞紀錄與揮桿次數</h2>
           </div>
           <div class="overview-total">
             <span>總揮桿</span>
