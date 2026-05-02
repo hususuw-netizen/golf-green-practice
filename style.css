@@ -170,6 +170,13 @@ select {
   line-height: 1.55;
 }
 
+.field-error {
+  color: var(--danger);
+  font-size: 0.86rem;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
 .field input {
   width: 100%;
   min-height: 54px;
@@ -242,11 +249,20 @@ select {
   font-size: 1.22rem;
 }
 
-.actions-row {
-  display: flex;
+.round-save-grid,
+.round-detail-summary {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
   margin-top: 14px;
-  flex-wrap: wrap;
+}
+
+.round-save-panel .btn {
+  margin-top: 14px;
+}
+
+.round-save-panel .message {
+  margin-top: 14px;
 }
 
 .btn {
@@ -258,6 +274,12 @@ select {
   font-weight: 800;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
+}
+
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  box-shadow: none;
 }
 
 .btn-primary {
@@ -301,6 +323,11 @@ select {
   background: #f4eee5;
 }
 
+.round-mode-switch {
+  margin-bottom: 14px;
+  width: fit-content;
+}
+
 .range-tab {
   min-height: 42px;
   border: 0;
@@ -342,6 +369,21 @@ select {
   box-shadow: 0 12px 24px rgba(45, 122, 74, 0.12);
 }
 
+.hole-chip.saved {
+  border-color: rgba(45, 122, 74, 0.65);
+  background: linear-gradient(180deg, #4aa368, #2d7a4a);
+  box-shadow: 0 10px 20px rgba(45, 122, 74, 0.18);
+}
+
+.hole-chip.saved strong {
+  color: #fff;
+}
+
+.hole-chip.saved.active {
+  border-color: rgba(31, 93, 55, 0.9);
+  background: linear-gradient(180deg, #58b376, #2f8550);
+}
+
 .hole-chip strong,
 .badge-card strong {
   display: block;
@@ -378,28 +420,6 @@ select {
   padding: 0 12px;
   white-space: nowrap;
   font-size: 0.88rem;
-}
-
-.summary-box {
-  margin-top: 16px;
-  padding: 16px;
-  border-radius: 22px;
-  background:
-    linear-gradient(135deg, rgba(45, 122, 74, 0.08), rgba(255, 255, 255, 0.8)),
-    #fff;
-  border: 1px solid rgba(45, 122, 74, 0.16);
-}
-
-.summary-box strong {
-  display: block;
-  margin-bottom: 6px;
-  font-size: 1.22rem;
-}
-
-.summary-box p {
-  margin: 0;
-  color: var(--muted);
-  line-height: 1.6;
 }
 
 .save-hole-bar {
@@ -561,6 +581,105 @@ select {
   font-weight: 700;
 }
 
+.round-history-list,
+.round-detail-hole-list {
+  display: grid;
+  gap: 10px;
+}
+
+.round-history-item,
+.round-detail-hole-item {
+  padding: 14px 12px;
+  border-radius: 18px;
+  background: #fffdf9;
+  border: 1px solid var(--line);
+}
+
+.round-history-item {
+  position: relative;
+  cursor: pointer;
+}
+
+.round-history-item.active {
+  border-color: rgba(0, 102, 204, 0.28);
+  box-shadow: 0 10px 20px rgba(0, 102, 204, 0.08);
+}
+
+.round-delete-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 30px;
+  height: 30px;
+  border: 0;
+  border-radius: 999px;
+  background: #f7e8e8;
+  color: var(--danger);
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.round-history-meta,
+.round-history-actions {
+  display: grid;
+  gap: 6px;
+}
+
+.round-history-meta strong {
+  font-size: 0.98rem;
+}
+
+.round-history-meta span,
+.round-detail-hole-item span {
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+
+.round-history-actions {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 12px;
+}
+
+.round-action-button {
+  min-height: 42px;
+  font-size: 0.88rem;
+}
+
+.round-inline-detail {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px dashed var(--line);
+}
+
+.round-inline-detail .round-detail-summary {
+  margin-top: 0;
+}
+
+.round-inline-detail .round-detail-hole-list {
+  margin-top: 10px;
+}
+
+.round-detail-hole-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.round-detail-hole-top strong {
+  margin-right: 2px;
+}
+
+.round-detail-hole-item {
+  display: grid;
+  gap: 6px;
+}
+
+.round-detail-hole-item strong {
+  font-size: 0.96rem;
+}
+
 .overview-total {
   min-width: 88px;
   padding: 10px 12px;
@@ -636,6 +755,12 @@ select {
 @media (max-width: 420px) {
   .panel {
     padding: 16px 14px;
+  }
+
+  .round-save-grid,
+  .round-detail-summary,
+  .round-history-actions {
+    grid-template-columns: 1fr;
   }
 
   .hole-grid {
