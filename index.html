@@ -67,9 +67,6 @@
             <strong id="backNineShotsValue">0</strong>
           </div>
         </div>
-        <div class="actions-row">
-          <button id="exportCsvButton" class="btn btn-accent" type="button">匯出 Excel CSV</button>
-        </div>
         <div id="exportResult" class="message is-info hidden"></div>
         <div id="profileMessage" class="message is-info hidden"></div>
       </section>
@@ -93,9 +90,9 @@
             <p class="section-kicker">球洞</p>
             <h2>選擇球洞</h2>
           </div>
-          <div class="switch-row">
-            <button class="range-tab active" type="button" data-page="front">前 9</button>
-            <button class="range-tab" type="button" data-page="back">後 9</button>
+          <div class="switch-row hole-page-switch">
+            <button class="range-tab hole-page-tab active" type="button" data-page="front">前 9</button>
+            <button class="range-tab hole-page-tab" type="button" data-page="back">後 9</button>
           </div>
         </div>
         <div id="holeList" class="hole-grid"></div>
@@ -152,8 +149,9 @@
           <div class="shot-entry-card">
             <div class="field">
               <label for="shotDistanceInput">本桿擊球距離（碼）</label>
-              <input id="shotDistanceInput" type="number" min="1" max="999" placeholder="例如：170">
+              <input id="shotDistanceInput" type="number" min="1" max="500" placeholder="例如：170">
               <small>輸入這一桿打了多遠，再按確定加入紀錄。</small>
+              <div id="shotDistanceError" class="field-error hidden"></div>
             </div>
             <button id="confirmShotButton" class="btn btn-primary" type="button">✓ 確定這一桿</button>
           </div>
@@ -167,7 +165,6 @@
 
           <div id="shotList" class="shot-list"></div>
           <div id="emptyShotNote" class="empty-note">還沒有擊球資料。每次輸入一桿距離後按「確定這一桿」，系統會自動判斷是剩餘距離、超出果嶺，還是已進果嶺。</div>
-          <div id="calcMessage" class="message is-warn hidden"></div>
         </div>
       </section>
 
@@ -189,6 +186,46 @@
         </div>
 
         <div id="overviewList" class="overview-list"></div>
+      </section>
+
+      <section class="panel round-save-panel">
+        <div class="section-head">
+          <div>
+            <p class="section-kicker">Round</p>
+            <h2>儲存本次 Round</h2>
+          </div>
+        </div>
+        <div class="switch-row round-mode-switch" role="tablist" aria-label="Round 儲存範圍">
+          <button class="range-tab round-mode-tab" type="button" data-round-save-mode="front">前 9</button>
+          <button class="range-tab round-mode-tab" type="button" data-round-save-mode="back">後 9</button>
+          <button class="range-tab round-mode-tab active" type="button" data-round-save-mode="full">18 洞</button>
+        </div>
+        <div class="round-save-grid">
+          <div class="stat-card">
+            <span>完成狀態</span>
+            <strong id="roundSaveStatusValue">0 / 18</strong>
+          </div>
+          <div class="stat-card">
+            <span>目前球場</span>
+            <strong id="roundSaveCourseValue">棕梠湖球場</strong>
+          </div>
+        </div>
+        <button id="saveRoundButton" class="btn btn-success" type="button">儲存本次 Round</button>
+        <div id="saveRoundMessage" class="message is-info hidden"></div>
+      </section>
+
+      <section class="panel round-history-panel">
+        <div class="section-head">
+          <div>
+            <p class="section-kicker">History</p>
+            <h2>最近幾次打球成績</h2>
+          </div>
+          <button id="toggleRoundHistoryButton" class="toggle-icon-button hidden" type="button" aria-label="切換最近幾次打球成績" aria-expanded="false">
+            <span class="toggle-arrow">▾</span>
+          </button>
+        </div>
+        <div id="recentRoundsList" class="round-history-list"></div>
+        <div id="recentRoundsEmpty" class="empty-note hidden">目前還沒有 round 歷史資料。</div>
       </section>
     </section>
   </main>
