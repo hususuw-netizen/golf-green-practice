@@ -805,6 +805,10 @@ select {
   gap: 10px;
 }
 
+.shot-list:not(.is-expanded) .shot-row:not(:last-child) {
+  display: none;
+}
+
 .shot-row {
   display: grid;
   grid-template-columns: 1fr;
@@ -814,9 +818,10 @@ select {
   border-radius: var(--radius-lg);
   background: #fffdf9;
   border: 1px solid var(--line);
+  grid-template-columns: 1fr;
 }
 
-.shot-row.is-expanded {
+.shot-list.is-expanded .shot-row {
   grid-template-columns: 1fr 40px;
 }
 
@@ -876,6 +881,10 @@ select {
   font-size: var(--font-lg);
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
+}
+
+.shot-list:not(.is-expanded) .remove-shot {
+  display: none;
 }
 
 .empty-note,

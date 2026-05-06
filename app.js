@@ -676,13 +676,13 @@ function validateHole(hole) {
 function getTrajectory(hole) {
   let x = hole.distance;
   let previousZone = "front";
+  const greenRadius = hole.greenDepth / 2;
 
   return hole.shotDistances.map((shotDistance, index) => {
     const shotNumber = index + 1;
     let outcome = "";
     let completed = false;
     let distanceToGreen = null;
-    const halfDepth = hole.greenDepth / 2;
 
     if (x >= 0) {
       x -= shotDistance;
@@ -691,30 +691,31 @@ function getTrajectory(hole) {
     }
 
     let currentZone = "";
-    if (x > halfDepth) {
+    if (x > greenRadius) {
       currentZone = "front";
-      distanceToGreen = x - halfDepth;
+      distanceToGreen = x - greenRadius;
       if (previousZone === "back" || previousZone === "green") {
-        outcome = `回到果嶺前，距離果嶺 ${distanceToGreen} 碼`;
+        outcome = `打回果嶺前，距離果嶺 ${distanceToGreen} 碼`;
       } else {
         outcome = `距離果嶺 ${distanceToGreen} 碼`;
       }
-    } else if (x < -halfDepth) {
-      currentZone = "back";
-      distanceToGreen = Math.abs(x) - halfDepth;
-      if (previousZone === "front" || previousZone === "green") {
-        outcome = `超出果嶺 ${distanceToGreen} 碼`;
+    } else if (Math.abs(x) <= greenRadius) {
+      currentZone = "green";
+      completed = true;
+      distanceToGreen = 0;
+      const distanceToHole = Math.abs(x);
+      if (previousZone === "back") {
+        outcome = `回到果嶺，距離球洞 ${distanceToHole} 碼`;
       } else {
-        outcome = `仍超出果嶺 ${distanceToGreen} 碼`;
+        outcome = `進入果嶺，距離球洞 ${distanceToHole} 碼`;
       }
     } else {
-      currentZone = "green";
-      distanceToGreen = Math.abs(x);
-      completed = true;
+      currentZone = "back";
+      const overshoot = Math.max(Math.abs(x) - greenRadius, 0);
       if (previousZone === "back") {
-        outcome = `回到果嶺，距離球洞 ${distanceToGreen} 碼`;
+        outcome = `仍超出果嶺 ${overshoot} 碼`;
       } else {
-        outcome = `進入果嶺，距離球洞 ${distanceToGreen} 碼`;
+        outcome = `超出果嶺 ${overshoot} 碼`;
       }
     }
 
@@ -723,53 +724,69 @@ function getTrajectory(hole) {
     return {
       shotNumber,
       shotDistance,
-      x,
-      remainingDistance: Math.abs(x),
+      zone: currentZone,
+      value: currentZone === "back" ? Math.max(Math.abs(x) - greenRadius, 0) : Math.abs(x),
       distanceToGreen,
-      estimatedShotsToGreen: completed ? shotNumber : null,
-      outcome,
-      completed
+      completed,
+      outcome
     };
   });
+}
+
+function calculateEstimate(hole) {
+  if (hole.shotDistances.length === 0) {
+    return {
+      estimatedShotsToGreen: null,
+      detail: "至少輸入一桿擊球距離，才能開始記錄。"
+    };
+  }
+
+  const trajectory = getTrajectory(hole);
+  const lastStep = trajectory[trajectory.length - 1];
+
+  if (lastStep.completed) {
+    return {
+      estimatedShotsToGreen: lastStep.shotNumber,
+      detail: `第 ${lastStep.shotNumber} 桿後，${lastStep.outcome}。`
+    };
+  }
+
+  return {
+    estimatedShotsToGreen: null,
+    detail: lastStep.zone === "back"
+      ? `目前超出果嶺 ${lastStep.value} 碼，請繼續輸入下一桿。`
+      : `目前距離果嶺 ${lastStep.distanceToGreen ?? 0} 碼，尚未進入果嶺。`
+  };
+}
+
+function syncGreenDepthToState() {
+  currentHole().greenDepth = sanitizeNumber(elements.greenDepthInput.value);
 }
 
 function refreshEstimate() {
   syncGreenDepthToState();
   const hole = currentHole();
-  const error = validateHole(hole);
-  if (error) {
+  const errorMessage = validateHole(hole);
+
+  if (errorMessage) {
     hole.lastEstimate = null;
-    setFieldError(elements.shotDistanceError, error);
-  } else {
-    setFieldError(elements.shotDistanceError);
-    const trajectory = getTrajectory(hole);
-    const lastStep = trajectory[trajectory.length - 1];
-    hole.lastEstimate = trajectory.length === 0
-      ? null
-      : {
-          remainingDistance: Math.abs(lastStep.x),
-          distanceToGreen: lastStep.distanceToGreen,
-          estimatedShotsToGreen: lastStep.estimatedShotsToGreen,
-          trajectory
-        };
-  }
-
-  if (isLoggedIn()) {
+    renderShotList();
+    renderHoleList();
+    renderOverview();
+    renderRoundSavePanel();
+    renderSaveHoleBar();
     saveCurrentUserData();
-  }
-  renderHoleEditor();
-  renderHoleList();
-  renderOverview();
-  renderRoundSavePanel();
-}
-
-function syncGreenDepthToState() {
-  const value = sanitizeNumber(elements.greenDepthInput.value);
-  if (value === "") {
     return;
   }
 
-  currentHole().greenDepth = value;
+  const estimate = calculateEstimate(hole);
+  hole.lastEstimate = estimate.estimatedShotsToGreen ? estimate : null;
+  renderShotList();
+  renderHoleList();
+  renderSaveHoleBar();
+  renderOverview();
+  renderRoundSavePanel();
+  saveCurrentUserData();
 }
 
 function renderAppVisibility() {
@@ -779,28 +796,32 @@ function renderAppVisibility() {
 }
 
 function renderCurrentPageTitle() {
-  const page = currentAppPageDefinition();
-  elements.currentPageTitle.textContent = page?.label || "";
-  elements.backButton.classList.toggle("hidden", state.activeAppPage === "course");
+  elements.currentPageTitle.textContent = currentAppPageDefinition().label;
+  const previousPageId = previousAppPageId();
+  const shouldShowBackButton = Boolean(previousPageId);
+  elements.backButton.disabled = !shouldShowBackButton;
+  elements.backButton.classList.toggle("hidden", !shouldShowBackButton);
 }
 
 function renderAppTabs() {
   const pages = appPageDefinitions();
   elements.appTabs.innerHTML = pages.map((page) => `
-    <button class="app-tab ${page.id === state.activeAppPage ? "active" : ""}" type="button" data-app-page="${page.id}">${page.label}</button>
+    <button class="app-tab ${page.id === state.activeAppPage ? "active" : ""}" type="button" data-app-page="${page.id}">
+      ${page.label}
+    </button>
   `).join("");
 }
 
 function renderAppPageVisibility() {
-  elements.appPages.forEach((page) => page.classList.add("hidden"));
-  const activePage = currentAppPageDefinition();
-  const activePanel = document.getElementById(activePage.panelId);
-  if (activePanel) {
-    activePanel.classList.remove("hidden");
-  }
+  const pages = appPageDefinitions();
+  elements.appPages.forEach((pageElement) => {
+    const definition = pages.find((page) => page.panelId === pageElement.id);
+    pageElement.classList.toggle("hidden", !definition || definition.id !== state.activeAppPage);
+  });
 
-  Array.from(document.querySelectorAll("[data-app-page]"))
-    .forEach((tab) => tab.classList.toggle("active", tab.dataset.appPage === state.activeAppPage));
+  Array.from(document.querySelectorAll("[data-app-page]")).forEach((tab) => {
+    tab.classList.toggle("active", tab.dataset.appPage === state.activeAppPage);
+  });
 }
 
 function renderMenuState() {
@@ -815,14 +836,23 @@ function renderProfile() {
 }
 
 function renderCourseSelect() {
-  const selectedValue = state.pendingCourseId || DEFAULT_COURSE_ID;
   elements.courseSelect.innerHTML = COURSES.map((course) => `
-    <option value="${course.id}" ${course.id === selectedValue ? "selected" : ""}>${course.name}</option>
+    <option value="${course.id}">${course.name}</option>
   `).join("");
+  elements.courseSelect.value = state.pendingCourseId || DEFAULT_COURSE_ID;
+  elements.confirmCourseButton.disabled = false;
+  elements.courseDetailsButton.disabled = false;
 }
 
 function renderCourseDetails() {
-  const course = getCourseDefinition(state.pendingCourseId || DEFAULT_COURSE_ID);
+  if (!state.pendingCourseId) {
+    elements.courseDetailsButton.setAttribute("aria-expanded", "false");
+    elements.courseDetailsPanel.classList.add("hidden");
+    elements.courseDetailsList.innerHTML = "";
+    return;
+  }
+
+  const course = getCourseDefinition(state.pendingCourseId);
   elements.courseDetailsButton.setAttribute("aria-expanded", String(state.isCourseDetailsOpen));
   elements.courseDetailsPanel.classList.toggle("hidden", !state.isCourseDetailsOpen);
   elements.courseDetailsList.innerHTML = course.holes.map((hole) => `
@@ -843,14 +873,11 @@ function renderHoleTabs() {
 function renderHoleList() {
   const holes = currentCourseHoles();
   const start = state.page === "front" ? 0 : 9;
-  const end = start + 9;
-  const pageHoles = holes.slice(start, end);
-  elements.holeList.innerHTML = pageHoles.map((hole, offset) => {
-    const index = start + offset;
-    const saved = Boolean(hole.savedRecord);
-    const active = index === state.selectedHoleIndex;
+  const pageHoles = holes.slice(start, start + 9);
+  elements.holeList.innerHTML = pageHoles.map((hole, index) => {
+    const actualIndex = start + index;
     return `
-      <button class="hole-chip ${saved ? "saved" : ""} ${active ? "active" : ""}" type="button" data-index="${index}">
+      <button class="hole-chip ${hole.savedRecord ? "saved" : ""} ${actualIndex === state.selectedHoleIndex ? "active" : ""}" type="button" data-index="${actualIndex}">
         <strong>${hole.hole}</strong>
       </button>
     `;
@@ -859,10 +886,11 @@ function renderHoleList() {
 
 function renderShotList() {
   const hole = currentHole();
-  const trajectory = hole.lastEstimate?.trajectory || getTrajectory(hole);
-  elements.emptyShotNote.classList.toggle("hidden", trajectory.length > 0);
+  const trajectory = getTrajectory(hole);
+  elements.emptyShotNote.classList.toggle("hidden", hole.shotDistances.length > 0);
+  elements.shotList.classList.toggle("is-expanded", state.isShotListExpanded);
   elements.shotList.innerHTML = trajectory.map((step) => `
-    <div class="shot-row ${state.isShotListExpanded ? "is-expanded" : ""}">
+    <div class="shot-row">
       <div class="shot-row-main">
         <div class="shot-label">第 ${step.shotNumber} 桿</div>
         <div class="shot-result-line">
@@ -870,7 +898,7 @@ function renderShotList() {
           <div class="shot-remainder ${step.completed ? "is-success" : ""}">${step.outcome}</div>
         </div>
       </div>
-      ${state.isShotListExpanded ? `<button class="icon-button remove-shot" type="button" data-shot-index="${step.shotNumber - 1}" aria-label="刪除這一桿">×</button>` : ""}
+      <button class="icon-button remove-shot" type="button" data-shot-index="${step.shotNumber - 1}" aria-label="刪除這一桿">×</button>
     </div>
   `).join("");
   renderShotListToggle(trajectory.length);
