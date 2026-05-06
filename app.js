@@ -63,7 +63,6 @@ const state = {
   selectedRoundId: "",
   roundSaveMode: "full",
   isCourseDetailsOpen: false,
-  isStatsOpen: false,
   isGreenDepthOpen: false,
   isShotListExpanded: false,
   isRoundHistoryExpanded: false,
@@ -191,12 +190,6 @@ function currentCourseHoles() {
     state.courses[currentCourseId()] = createEmptyCourseState(getCourseDefinition());
   }
   return state.courses[currentCourseId()];
-}
-
-function currentPageRange() {
-  return state.page === "front"
-    ? { start: 0, end: 9, label: "前 9 洞" }
-    : { start: 9, end: 18, label: "後 9 洞" };
 }
 
 function currentHole() {
@@ -372,10 +365,6 @@ function showMessage(target, text, className) {
 function hideMessage(target) {
   target.textContent = "";
   target.classList.add("hidden");
-}
-
-function hideElement(element) {
-  element.classList.add("hidden");
 }
 
 function setFieldError(element, text = "") {
@@ -636,6 +625,12 @@ function previousAppPageId() {
   return currentIndex > 0 ? pages[currentIndex - 1].id : "";
 }
 
+function scrollAppToTop() {
+  window.scrollTo({ top: 0, behavior: "auto" });
+  document.documentElement.scrollTop = 0;
+  document.body.scrollTop = 0;
+}
+
 function setActiveAppPage(pageId) {
   const pages = appPageDefinitions();
   state.activeAppPage = pages.some((page) => page.id === pageId) ? pageId : pages[0].id;
@@ -645,8 +640,10 @@ function setActiveAppPage(pageId) {
   }
   state.isMenuOpen = false;
   renderCurrentPageTitle();
+  renderAppTabs();
   renderAppPageVisibility();
   renderMenuState();
+  scrollAppToTop();
 }
 
 function validateUsername(username) {
@@ -702,23 +699,22 @@ function getTrajectory(hole) {
       } else {
         outcome = `距離果嶺 ${distanceToGreen} 碼`;
       }
-    } else if (x >= -halfDepth && x <= halfDepth) {
-      currentZone = "green";
-      completed = true;
-      distanceToGreen = 0;
-      const distanceToHole = Math.abs(x);
-      if (previousZone === "back") {
-        outcome = `回到果嶺，距離球洞 ${distanceToHole} 碼`;
+    } else if (x < -halfDepth) {
+      currentZone = "back";
+      distanceToGreen = Math.abs(x) - halfDepth;
+      if (previousZone === "front" || previousZone === "green") {
+        outcome = `超出果嶺 ${distanceToGreen} 碼`;
       } else {
-        outcome = `進入果嶺，距離球洞 ${distanceToHole} 碼`;
+        outcome = `仍超出果嶺 ${distanceToGreen} 碼`;
       }
     } else {
-      currentZone = "back";
-      const overshoot = Math.abs(x) - halfDepth;
+      currentZone = "green";
+      distanceToGreen = Math.abs(x);
+      completed = true;
       if (previousZone === "back") {
-        outcome = `仍超出果嶺 ${overshoot} 碼`;
+        outcome = `回到果嶺，距離球洞 ${distanceToGreen} 碼`;
       } else {
-        outcome = `超出果嶺 ${overshoot} 碼`;
+        outcome = `進入果嶺，距離球洞 ${distanceToGreen} 碼`;
       }
     }
 
@@ -727,105 +723,115 @@ function getTrajectory(hole) {
     return {
       shotNumber,
       shotDistance,
-      zone: currentZone,
-      value: Math.abs(x),
+      x,
+      remainingDistance: Math.abs(x),
       distanceToGreen,
-      completed,
-      outcome
+      estimatedShotsToGreen: completed ? shotNumber : null,
+      outcome,
+      completed
     };
   });
 }
 
-function calculateEstimate(hole) {
-  if (hole.shotDistances.length === 0) {
-    return {
-      estimatedShotsToGreen: null,
-      detail: "至少輸入一桿擊球距離，才能開始記錄。"
-    };
-  }
-
-  const trajectory = getTrajectory(hole);
-  const lastStep = trajectory[trajectory.length - 1];
-
-  if (lastStep.completed) {
-    return {
-      estimatedShotsToGreen: lastStep.shotNumber,
-      detail: `第 ${lastStep.shotNumber} 桿後，${lastStep.outcome}。`
-    };
-  }
-
-  return {
-    estimatedShotsToGreen: null,
-    detail: lastStep.zone === "back"
-      ? `目前超出果嶺 ${Math.abs(lastStep.value) - hole.greenDepth / 2} 碼，請繼續輸入下一桿。`
-      : `目前距離果嶺 ${lastStep.distanceToGreen ?? 0} 碼，尚未進入果嶺。`
-  };
-}
-
-function syncGreenDepthToState() {
-  currentHole().greenDepth = sanitizeNumber(elements.greenDepthInput.value);
-}
-
-function validateCurrentHole() {
-  const error = validateHole(currentHole());
-  setFieldError(elements.shotDistanceError, error);
-  return !error;
-}
-
 function refreshEstimate() {
   syncGreenDepthToState();
-  if (!validateCurrentHole()) {
-    return;
+  const hole = currentHole();
+  const error = validateHole(hole);
+  if (error) {
+    hole.lastEstimate = null;
+    setFieldError(elements.shotDistanceError, error);
+  } else {
+    setFieldError(elements.shotDistanceError);
+    const trajectory = getTrajectory(hole);
+    const lastStep = trajectory[trajectory.length - 1];
+    hole.lastEstimate = trajectory.length === 0
+      ? null
+      : {
+          remainingDistance: Math.abs(lastStep.x),
+          distanceToGreen: lastStep.distanceToGreen,
+          estimatedShotsToGreen: lastStep.estimatedShotsToGreen,
+          trajectory
+        };
   }
 
-  const hole = currentHole();
-  hole.lastEstimate = calculateEstimate(hole);
-  saveCurrentUserData();
+  if (isLoggedIn()) {
+    saveCurrentUserData();
+  }
   renderHoleEditor();
   renderHoleList();
   renderOverview();
   renderRoundSavePanel();
 }
 
+function syncGreenDepthToState() {
+  const value = sanitizeNumber(elements.greenDepthInput.value);
+  if (value === "") {
+    return;
+  }
+
+  currentHole().greenDepth = value;
+}
+
 function renderAppVisibility() {
-  const loggedIn = isLoggedIn();
-  elements.heroPanel.classList.toggle("hidden", loggedIn);
-  elements.loginPanel.classList.toggle("hidden", loggedIn);
-  elements.appPanel.classList.toggle("hidden", !loggedIn);
+  elements.heroPanel.classList.toggle("hidden", isLoggedIn());
+  elements.loginPanel.classList.toggle("hidden", isLoggedIn());
+  elements.appPanel.classList.toggle("hidden", !isLoggedIn());
+}
+
+function renderCurrentPageTitle() {
+  const page = currentAppPageDefinition();
+  elements.currentPageTitle.textContent = page?.label || "";
+  elements.backButton.classList.toggle("hidden", state.activeAppPage === "course");
+}
+
+function renderAppTabs() {
+  const pages = appPageDefinitions();
+  elements.appTabs.innerHTML = pages.map((page) => `
+    <button class="app-tab ${page.id === state.activeAppPage ? "active" : ""}" type="button" data-app-page="${page.id}">${page.label}</button>
+  `).join("");
+}
+
+function renderAppPageVisibility() {
+  elements.appPages.forEach((page) => page.classList.add("hidden"));
+  const activePage = currentAppPageDefinition();
+  const activePanel = document.getElementById(activePage.panelId);
+  if (activePanel) {
+    activePanel.classList.remove("hidden");
+  }
+
+  Array.from(document.querySelectorAll("[data-app-page]"))
+    .forEach((tab) => tab.classList.toggle("active", tab.dataset.appPage === state.activeAppPage));
+}
+
+function renderMenuState() {
+  elements.menuOverlay.classList.toggle("hidden", !state.isMenuOpen);
+  elements.menuDrawer.classList.toggle("hidden", !state.isMenuOpen);
+  elements.menuDrawer.setAttribute("aria-hidden", String(!state.isMenuOpen));
+  elements.menuButton.setAttribute("aria-expanded", String(state.isMenuOpen));
 }
 
 function renderProfile() {
   elements.welcomeText.textContent = state.profile.username;
 }
 
-function renderCurrentPageTitle() {
-  const page = currentAppPageDefinition();
-  elements.currentPageTitle.textContent = page.label;
-  const previousPageId = previousAppPageId();
-  const shouldHideBackButton = state.activeAppPage === "course";
-  elements.backButton.disabled = !previousPageId;
-  elements.backButton.classList.toggle("hidden", shouldHideBackButton);
-}
-
-function renderAppTabs() {
-  elements.appTabs.innerHTML = appPageDefinitions().map((page) => `
-    <button class="app-tab ${page.id === state.activeAppPage ? "active" : ""}" type="button" data-app-page="${page.id}">${page.label}</button>
+function renderCourseSelect() {
+  const selectedValue = state.pendingCourseId || DEFAULT_COURSE_ID;
+  elements.courseSelect.innerHTML = COURSES.map((course) => `
+    <option value="${course.id}" ${course.id === selectedValue ? "selected" : ""}>${course.name}</option>
   `).join("");
 }
 
-function renderAppPageVisibility() {
-  const pages = appPageDefinitions();
-  elements.appPages.forEach((panel) => {
-    const definition = pages.find((page) => page.panelId === panel.id);
-    panel.classList.toggle("hidden", definition?.id !== state.activeAppPage);
-  });
-}
-
-function renderMenuState() {
-  elements.menuButton.setAttribute("aria-expanded", String(state.isMenuOpen));
-  elements.menuDrawer.setAttribute("aria-hidden", String(!state.isMenuOpen));
-  elements.menuOverlay.classList.toggle("hidden", !state.isMenuOpen);
-  elements.menuDrawer.classList.toggle("hidden", !state.isMenuOpen);
+function renderCourseDetails() {
+  const course = getCourseDefinition(state.pendingCourseId || DEFAULT_COURSE_ID);
+  elements.courseDetailsButton.setAttribute("aria-expanded", String(state.isCourseDetailsOpen));
+  elements.courseDetailsPanel.classList.toggle("hidden", !state.isCourseDetailsOpen);
+  elements.courseDetailsList.innerHTML = course.holes.map((hole) => `
+    <div class="course-detail-item">
+      <strong>第 ${hole.hole} 洞</strong>
+      <span>Par ${hole.par}</span>
+      <span>${hole.distance} 碼</span>
+    </div>
+  `).join("");
 }
 
 function renderHoleTabs() {
@@ -834,45 +840,17 @@ function renderHoleTabs() {
   });
 }
 
-function renderCourseSelect() {
-  elements.courseSelect.innerHTML = COURSES.map((course) => `
-    <option value="${course.id}">${course.name}</option>
-  `).join("");
-  elements.courseSelect.value = state.pendingCourseId || DEFAULT_COURSE_ID;
-  elements.confirmCourseButton.disabled = false;
-  elements.courseDetailsButton.disabled = false;
-}
-
-function renderCourseDetails() {
-  if (!state.pendingCourseId) {
-    elements.courseDetailsButton.setAttribute("aria-expanded", "false");
-    elements.courseDetailsPanel.classList.add("hidden");
-    elements.courseDetailsList.innerHTML = "";
-    return;
-  }
-
-  const course = getCourseDefinition(state.pendingCourseId);
-  elements.courseDetailsButton.setAttribute("aria-expanded", String(state.isCourseDetailsOpen));
-  elements.courseDetailsPanel.classList.toggle("hidden", !state.isCourseDetailsOpen);
-  elements.courseDetailsList.innerHTML = state.isCourseDetailsOpen
-    ? course.holes.map((hole) => `
-        <div class="course-detail-item">
-          <strong>第 ${hole.hole} 洞</strong>
-          <span>Par ${hole.par}</span>
-          <span>${hole.distance} 碼</span>
-        </div>
-      `).join("")
-    : "";
-}
-
 function renderHoleList() {
   const holes = currentCourseHoles();
   const start = state.page === "front" ? 0 : 9;
-  const pageHoles = holes.slice(start, start + 9);
-  elements.holeList.innerHTML = pageHoles.map((hole, index) => {
-    const actualIndex = start + index;
+  const end = start + 9;
+  const pageHoles = holes.slice(start, end);
+  elements.holeList.innerHTML = pageHoles.map((hole, offset) => {
+    const index = start + offset;
+    const saved = Boolean(hole.savedRecord);
+    const active = index === state.selectedHoleIndex;
     return `
-      <button class="hole-chip ${hole.savedRecord ? "saved" : ""} ${actualIndex === state.selectedHoleIndex ? "active" : ""}" type="button" data-index="${actualIndex}">
+      <button class="hole-chip ${saved ? "saved" : ""} ${active ? "active" : ""}" type="button" data-index="${index}">
         <strong>${hole.hole}</strong>
       </button>
     `;
@@ -881,25 +859,20 @@ function renderHoleList() {
 
 function renderShotList() {
   const hole = currentHole();
-  const trajectory = getTrajectory(hole);
-  const shouldCollapse = trajectory.length > 1 && !state.isShotListExpanded;
-  const visibleSteps = shouldCollapse ? [trajectory[trajectory.length - 1]] : trajectory;
-  elements.emptyShotNote.classList.toggle("hidden", hole.shotDistances.length > 0);
-  elements.shotList.innerHTML = visibleSteps.map((step) => {
-    const isSuccess = step.zone === "green";
-    return `
-      <div class="shot-row">
-        <div class="shot-row-main">
-          <div class="shot-label">第 ${step.shotNumber} 桿</div>
-          <div class="shot-result-line">
-            <div class="shot-distance-value">${step.shotDistance} 碼</div>
-            <div class="shot-remainder ${isSuccess ? "is-success" : ""}">${step.outcome}</div>
-          </div>
+  const trajectory = hole.lastEstimate?.trajectory || getTrajectory(hole);
+  elements.emptyShotNote.classList.toggle("hidden", trajectory.length > 0);
+  elements.shotList.innerHTML = trajectory.map((step) => `
+    <div class="shot-row ${state.isShotListExpanded ? "is-expanded" : ""}">
+      <div class="shot-row-main">
+        <div class="shot-label">第 ${step.shotNumber} 桿</div>
+        <div class="shot-result-line">
+          <div class="shot-distance-value">${step.shotDistance} 碼</div>
+          <div class="shot-remainder ${step.completed ? "is-success" : ""}">${step.outcome}</div>
         </div>
-        <button class="icon-button remove-shot" type="button" data-shot-index="${step.shotNumber - 1}" aria-label="刪除這一桿">×</button>
       </div>
-    `;
-  }).join("");
+      ${state.isShotListExpanded ? `<button class="icon-button remove-shot" type="button" data-shot-index="${step.shotNumber - 1}" aria-label="刪除這一桿">×</button>` : ""}
+    </div>
+  `).join("");
   renderShotListToggle(trajectory.length);
 }
 
@@ -930,13 +903,13 @@ function renderHoleEditor() {
 
 function renderOverview() {
   const holes = currentCourseHoles();
-  const { start, end, label } = currentPageRange();
-  const pageHoles = holes.slice(start, end);
-  const totalShots = pageHoles.reduce((sum, hole) => sum + (hole.savedRecord ? hole.savedRecord.shots : 0), 0);
-  const totalPar = pageHoles.reduce((sum, hole) => sum + hole.par, 0);
-  elements.overviewTitle.textContent = `${label}紀錄`;
+  const { start, end, label } = getRoundSaveConfig();
+  const overviewHoles = holes.slice(start, end);
+  const totalShots = overviewHoles.reduce((sum, hole) => sum + (hole.savedRecord ? hole.savedRecord.shots : 0), 0);
+  const totalPar = overviewHoles.reduce((sum, hole) => sum + hole.par, 0);
+  elements.overviewTitle.textContent = `${label}${label.includes("洞") ? "" : " 洞"}紀錄`;
   elements.totalShotsValue.textContent = `${totalShots} / ${totalPar}`;
-  elements.overviewList.innerHTML = pageHoles.map((hole) => {
+  elements.overviewList.innerHTML = overviewHoles.map((hole) => {
     const resultText = hole.savedRecord ? hole.savedRecord.resultText : "尚無紀錄";
     const shotsText = hole.savedRecord ? `${hole.savedRecord.shots} 桿` : "-";
 
@@ -961,12 +934,12 @@ function renderRoundSavePanel() {
     tab.classList.toggle("active", tab.dataset.roundSaveMode === state.roundSaveMode);
   });
   elements.roundSaveStatusValue.textContent = `${savedHoleCount} / ${config.targetCount}`;
-  elements.roundSaveCourseValue.textContent = `${currentCourseName()} White tee ${config.label}`;
+  elements.roundSaveCourseValue.textContent = `${currentCourseName()} White tee`;
   elements.saveRoundButton.disabled = !canSave;
   elements.saveRoundButton.setAttribute("aria-disabled", String(!canSave));
 
   if (canSave) {
-    showMessage(elements.saveRoundMessage, `${config.label}都已完成，可儲存本次 round。`, "is-info");
+    showMessage(elements.saveRoundMessage, `${config.label}已完成，可儲存本次 round。`, "is-info");
     return;
   }
 
@@ -1093,34 +1066,6 @@ function downloadCsvFile(filename, content) {
   document.body.removeChild(link);
   setTimeout(() => URL.revokeObjectURL(url), 5000);
   return url;
-}
-
-function buildCsvContent() {
-  const holes = currentCourseHoles();
-  const rows = [
-    ["帳號", state.profile.username],
-    ["模擬球場", currentCourseName()],
-    ["已完成洞數", String(getSavedRecords().length)],
-    ["平均上果嶺", getAverageGir() ? `${getAverageGir()} 桿` : "-"],
-    ["總揮桿", String(holes.reduce((sum, hole) => sum + (hole.savedRecord ? hole.savedRecord.shots : 0), 0))],
-    [],
-    ["洞別", "Par", "球洞長度(碼)", "果嶺深度(碼)", "揮桿次數", "逐桿距離(碼)"]
-  ];
-
-  holes.forEach((hole) => {
-    rows.push([
-      String(hole.hole),
-      String(hole.par),
-      String(hole.distance),
-      String(hole.greenDepth),
-      hole.savedRecord ? String(hole.savedRecord.shots) : "",
-      hole.shotDistances.join(" / ")
-    ]);
-  });
-
-  return rows
-    .map((row) => row.map((cell) => `"${String(cell ?? "").replace(/"/g, '""')}"`).join(","))
-    .join("\r\n");
 }
 
 function buildRoundCsvContent(round) {
@@ -1340,7 +1285,7 @@ function bindEvents() {
     saveCurrentUserData();
     state.activeAppPage = "history";
     renderAll();
-    showMessage(elements.exportResult, `已儲存${savedConfig.label} round，已切換到歷史紀錄。`, "is-info");
+    showMessage(elements.exportResult, `已儲存${savedConfig.label} round。`, "is-info");
   });
   elements.courseSelect.addEventListener("change", handleCourseChange);
   elements.confirmCourseButton.addEventListener("click", handleConfirmCourseSelection);
@@ -1363,6 +1308,7 @@ function bindEvents() {
     tab.addEventListener("click", () => {
       state.roundSaveMode = tab.dataset.roundSaveMode || "full";
       renderRoundSavePanel();
+      renderOverview();
     });
   });
   elements.toggleRoundHistoryButton.addEventListener("click", () => {
