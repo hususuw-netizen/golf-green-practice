@@ -158,19 +158,6 @@
       </section>
 
       <section id="summaryPage" class="app-page">
-        <section class="panel overview-panel">
-          <div class="section-head">
-            <div>
-              <h2 id="overviewTitle">前 9 洞紀錄與揮桿次數</h2>
-            </div>
-            <div class="overview-total">
-              <span>總揮桿</span>
-              <strong id="totalShotsValue">0</strong>
-            </div>
-          </div>
-          <div id="overviewList" class="overview-list"></div>
-        </section>
-
         <section class="panel round-save-panel">
           <div class="section-head">
             <div>
@@ -186,14 +173,24 @@
             <div class="stat-card">
               <span>完成狀態</span>
               <strong id="roundSaveStatusValue">0 / 18</strong>
-            </div>
-            <div class="stat-card">
-              <span>目前球場</span>
-              <strong id="roundSaveCourseValue">棕梠湖球場</strong>
+              <div id="roundSaveCourseValue" class="round-save-course-value">棕梠湖球場 White tee</div>
             </div>
           </div>
           <button id="saveRoundButton" class="btn btn-success full-width" type="button">儲存本次 Round</button>
           <div id="saveRoundMessage" class="message is-info hidden"></div>
+        </section>
+
+        <section class="panel overview-panel">
+          <div class="section-head">
+            <div>
+              <h2 id="overviewTitle">前 9 洞紀錄與揮桿次數</h2>
+            </div>
+            <div class="overview-total">
+              <span>總揮桿</span>
+              <strong id="totalShotsValue">0</strong>
+            </div>
+          </div>
+          <div id="overviewList" class="overview-list"></div>
         </section>
       </section>
 
@@ -215,7 +212,6 @@
     </section>
   </main>
 
-  <script src="pages-login.js"></script>
   <script src="pages-course.js"></script>
   <script src="pages-play.js"></script>
   <script src="pages-summary.js"></script>
