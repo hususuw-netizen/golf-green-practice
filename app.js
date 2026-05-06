@@ -55,10 +55,14 @@ const CURRENT_USER_KEY = "golf-current-user";
 const LEGACY_STORAGE_KEY = "golf-green-estimator";
 
 const state = {
+  activeAppPage: "course",
+  isMenuOpen: false,
+  pendingCourseId: DEFAULT_COURSE_ID,
   page: "front",
   selectedHoleIndex: 0,
   selectedRoundId: "",
   roundSaveMode: "full",
+  isCourseDetailsOpen: false,
   isStatsOpen: false,
   isGreenDepthOpen: false,
   isShotListExpanded: false,
@@ -72,8 +76,17 @@ const state = {
 };
 
 const elements = {
+  heroPanel: document.getElementById("heroPanel"),
   loginPanel: document.getElementById("loginPanel"),
   appPanel: document.getElementById("appPanel"),
+  currentPageTitle: document.getElementById("currentPageTitle"),
+  backButton: document.getElementById("backButton"),
+  menuButton: document.getElementById("menuButton"),
+  closeMenuButton: document.getElementById("closeMenuButton"),
+  menuOverlay: document.getElementById("menuOverlay"),
+  menuDrawer: document.getElementById("menuDrawer"),
+  appTabs: document.getElementById("appTabs"),
+  appPages: Array.from(document.querySelectorAll(".app-page")),
   usernameInput: document.getElementById("usernameInput"),
   loginButton: document.getElementById("loginButton"),
   loginMessage: document.getElementById("loginMessage"),
@@ -81,17 +94,15 @@ const elements = {
   logoutButton: document.getElementById("logoutButton"),
   profileMessage: document.getElementById("profileMessage"),
   exportResult: document.getElementById("exportResult"),
-  savedHolesValue: document.getElementById("savedHolesValue"),
-  toggleStatsButton: document.getElementById("toggleStatsButton"),
-  statsDetailPanel: document.getElementById("statsDetailPanel"),
-  frontNineShotsValue: document.getElementById("frontNineShotsValue"),
-  backNineShotsValue: document.getElementById("backNineShotsValue"),
-  allShotsValue: document.getElementById("allShotsValue"),
   courseSelect: document.getElementById("courseSelect"),
+  courseDetailsButton: document.getElementById("courseDetailsButton"),
+  confirmCourseButton: document.getElementById("confirmCourseButton"),
+  courseDetailsPanel: document.getElementById("courseDetailsPanel"),
+  courseDetailsList: document.getElementById("courseDetailsList"),
   holeList: document.getElementById("holeList"),
+  holeSelectorSubtitle: document.getElementById("holeSelectorSubtitle"),
   tabs: Array.from(document.querySelectorAll(".hole-page-tab")),
   editorTitle: document.getElementById("editorTitle"),
-  holeSubtitle: document.getElementById("holeSubtitle"),
   parValue: document.getElementById("parValue"),
   distanceValue: document.getElementById("distanceValue"),
   toggleGreenDepthButton: document.getElementById("toggleGreenDepthButton"),
@@ -107,6 +118,7 @@ const elements = {
   saveHoleBar: document.getElementById("saveHoleBar"),
   saveHoleRecordButton: document.getElementById("saveHoleRecordButton"),
   saveHoleHint: document.getElementById("saveHoleHint"),
+  goSummaryButton: document.getElementById("goSummaryButton"),
   overviewTitle: document.getElementById("overviewTitle"),
   overviewList: document.getElementById("overviewList"),
   totalShotsValue: document.getElementById("totalShotsValue"),
@@ -279,6 +291,17 @@ function formatRoundRangeText(round) {
   }
 
   return "18洞，完成1~18";
+}
+
+function getRoundTotalPar(round) {
+  return Array.isArray(round?.holes)
+    ? round.holes.reduce((sum, hole) => sum + (Number(hole.par) || 0), 0)
+    : 0;
+}
+
+function formatRoundShotsWithPar(round) {
+  const totalPar = getRoundTotalPar(round);
+  return totalPar ? `${round.totalShots} / ${totalPar}` : String(round.totalShots);
 }
 
 function getRoundHistoryById(roundId) {
@@ -566,6 +589,7 @@ function saveCurrentUserData() {
 function applyUserData(userData) {
   state.profile.username = userData.username;
   state.profile.selectedCourseId = userData.selectedCourseId || DEFAULT_COURSE_ID;
+  state.pendingCourseId = state.profile.selectedCourseId || DEFAULT_COURSE_ID;
   state.page = "front";
   state.selectedHoleIndex = 0;
   state.courses = userData.courses || createDefaultCourseMap();
@@ -579,6 +603,7 @@ function loadSession() {
   if (!currentUsername) {
     state.profile.username = "";
     state.profile.selectedCourseId = DEFAULT_COURSE_ID;
+    state.pendingCourseId = DEFAULT_COURSE_ID;
     state.courses = createDefaultCourseMap();
     state.rounds = [];
     state.selectedRoundId = "";
@@ -588,6 +613,40 @@ function loadSession() {
 
   ensureUserInIndex(currentUsername);
   applyUserData(loadUserData(currentUsername));
+}
+
+function appPageDefinitions() {
+  return Array.isArray(window.GOLF_APP_PAGES) && window.GOLF_APP_PAGES.length > 0
+    ? window.GOLF_APP_PAGES
+    : [
+        { id: "course", label: "球場", panelId: "coursePage" },
+        { id: "play", label: "球洞", panelId: "playPage" },
+        { id: "summary", label: "總表", panelId: "summaryPage" },
+        { id: "history", label: "歷史", panelId: "historyPage" }
+      ];
+}
+
+function currentAppPageDefinition() {
+  return appPageDefinitions().find((page) => page.id === state.activeAppPage) || appPageDefinitions()[0];
+}
+
+function previousAppPageId() {
+  const pages = appPageDefinitions();
+  const currentIndex = pages.findIndex((page) => page.id === state.activeAppPage);
+  return currentIndex > 0 ? pages[currentIndex - 1].id : "";
+}
+
+function setActiveAppPage(pageId) {
+  const pages = appPageDefinitions();
+  state.activeAppPage = pages.some((page) => page.id === pageId) ? pageId : pages[0].id;
+  if (state.activeAppPage === "course") {
+    state.pendingCourseId = state.profile.selectedCourseId || DEFAULT_COURSE_ID;
+    state.isCourseDetailsOpen = false;
+  }
+  state.isMenuOpen = false;
+  renderCurrentPageTitle();
+  renderAppPageVisibility();
+  renderMenuState();
 }
 
 function validateUsername(username) {
@@ -626,6 +685,7 @@ function getTrajectory(hole) {
     let outcome = "";
     let completed = false;
     let distanceToGreen = null;
+    const halfDepth = hole.greenDepth / 2;
 
     if (x >= 0) {
       x -= shotDistance;
@@ -634,26 +694,27 @@ function getTrajectory(hole) {
     }
 
     let currentZone = "";
-    if (x > hole.greenDepth) {
+    if (x > halfDepth) {
       currentZone = "front";
-      distanceToGreen = x - hole.greenDepth;
+      distanceToGreen = x - halfDepth;
       if (previousZone === "back" || previousZone === "green") {
-        outcome = `打回果嶺前，距離果嶺 ${distanceToGreen} 碼`;
+        outcome = `回到果嶺前，距離果嶺 ${distanceToGreen} 碼`;
       } else {
         outcome = `距離果嶺 ${distanceToGreen} 碼`;
       }
-    } else if (x >= 0 && x <= hole.greenDepth) {
+    } else if (x >= -halfDepth && x <= halfDepth) {
       currentZone = "green";
       completed = true;
       distanceToGreen = 0;
+      const distanceToHole = Math.abs(x);
       if (previousZone === "back") {
-        outcome = `回到果嶺，距離球洞 ${x} 碼`;
+        outcome = `回到果嶺，距離球洞 ${distanceToHole} 碼`;
       } else {
-        outcome = `進入果嶺，距離球洞 ${x} 碼`;
+        outcome = `進入果嶺，距離球洞 ${distanceToHole} 碼`;
       }
     } else {
       currentZone = "back";
-      const overshoot = Math.abs(x);
+      const overshoot = Math.abs(x) - halfDepth;
       if (previousZone === "back") {
         outcome = `仍超出果嶺 ${overshoot} 碼`;
       } else {
@@ -696,7 +757,7 @@ function calculateEstimate(hole) {
   return {
     estimatedShotsToGreen: null,
     detail: lastStep.zone === "back"
-      ? `目前超出果嶺 ${lastStep.value} 碼，請繼續輸入下一桿。`
+      ? `目前超出果嶺 ${Math.abs(lastStep.value) - hole.greenDepth / 2} 碼，請繼續輸入下一桿。`
       : `目前距離果嶺 ${lastStep.distanceToGreen ?? 0} 碼，尚未進入果嶺。`
   };
 }
@@ -705,87 +766,103 @@ function syncGreenDepthToState() {
   currentHole().greenDepth = sanitizeNumber(elements.greenDepthInput.value);
 }
 
-function getSavedRecords() {
-  return currentCourseHoles().filter((hole) => hole.savedRecord);
-}
-
-function getAverageGir() {
-  const savedRecords = getSavedRecords();
-  if (savedRecords.length === 0) {
-    return "";
-  }
-
-  const totalShots = savedRecords.reduce((sum, hole) => sum + hole.savedRecord.shots, 0);
-  return (totalShots / savedRecords.length).toFixed(2);
+function validateCurrentHole() {
+  const error = validateHole(currentHole());
+  setFieldError(elements.shotDistanceError, error);
+  return !error;
 }
 
 function refreshEstimate() {
   syncGreenDepthToState();
-  const hole = currentHole();
-  const errorMessage = validateHole(hole);
-
-  if (errorMessage) {
-    hole.lastEstimate = null;
-    hideElement(elements.saveHoleBar);
-    renderShotList();
-    renderHoleList();
-    renderOverview();
-    renderRoundSavePanel();
-    renderStats();
-    saveCurrentUserData();
+  if (!validateCurrentHole()) {
     return;
   }
 
-  const estimate = calculateEstimate(hole);
-  hole.lastEstimate = estimate.estimatedShotsToGreen ? estimate : null;
-  renderShotList();
+  const hole = currentHole();
+  hole.lastEstimate = calculateEstimate(hole);
+  saveCurrentUserData();
+  renderHoleEditor();
   renderHoleList();
-  renderSaveHoleBar();
   renderOverview();
   renderRoundSavePanel();
-  renderStats();
-  saveCurrentUserData();
 }
 
 function renderAppVisibility() {
-  elements.loginPanel.classList.toggle("hidden", isLoggedIn());
-  elements.appPanel.classList.toggle("hidden", !isLoggedIn());
+  const loggedIn = isLoggedIn();
+  elements.heroPanel.classList.toggle("hidden", loggedIn);
+  elements.loginPanel.classList.toggle("hidden", loggedIn);
+  elements.appPanel.classList.toggle("hidden", !loggedIn);
 }
 
 function renderProfile() {
   elements.welcomeText.textContent = state.profile.username;
 }
 
-function renderStats() {
-  const holes = currentCourseHoles();
-  const savedRecords = getSavedRecords();
-  const holeCount = holes.length;
-  const frontNineShots = holes.slice(0, 9).reduce((sum, hole) => sum + (hole.savedRecord ? hole.savedRecord.shots : 0), 0);
-  const backNineShots = holes.slice(9, 18).reduce((sum, hole) => sum + (hole.savedRecord ? hole.savedRecord.shots : 0), 0);
-  const allShots = frontNineShots + backNineShots;
-
-  elements.savedHolesValue.textContent = `${savedRecords.length} / ${holeCount}`;
-  elements.frontNineShotsValue.textContent = String(frontNineShots);
-  elements.backNineShotsValue.textContent = String(backNineShots);
-  elements.allShotsValue.textContent = String(allShots);
+function renderCurrentPageTitle() {
+  const page = currentAppPageDefinition();
+  elements.currentPageTitle.textContent = page.label;
+  const previousPageId = previousAppPageId();
+  const shouldHideBackButton = state.activeAppPage === "course";
+  elements.backButton.disabled = !previousPageId;
+  elements.backButton.classList.toggle("hidden", shouldHideBackButton);
 }
 
-function renderStatsDetailPanel() {
-  elements.statsDetailPanel.classList.toggle("hidden", !state.isStatsOpen);
-  elements.toggleStatsButton.setAttribute("aria-expanded", String(state.isStatsOpen));
-}
-
-function renderCourseSelect() {
-  elements.courseSelect.innerHTML = COURSES.map((course) => `
-    <option value="${course.id}">${course.name}</option>
+function renderAppTabs() {
+  elements.appTabs.innerHTML = appPageDefinitions().map((page) => `
+    <button class="app-tab ${page.id === state.activeAppPage ? "active" : ""}" type="button" data-app-page="${page.id}">${page.label}</button>
   `).join("");
-  elements.courseSelect.value = currentCourseId();
+}
+
+function renderAppPageVisibility() {
+  const pages = appPageDefinitions();
+  elements.appPages.forEach((panel) => {
+    const definition = pages.find((page) => page.panelId === panel.id);
+    panel.classList.toggle("hidden", definition?.id !== state.activeAppPage);
+  });
+}
+
+function renderMenuState() {
+  elements.menuButton.setAttribute("aria-expanded", String(state.isMenuOpen));
+  elements.menuDrawer.setAttribute("aria-hidden", String(!state.isMenuOpen));
+  elements.menuOverlay.classList.toggle("hidden", !state.isMenuOpen);
+  elements.menuDrawer.classList.toggle("hidden", !state.isMenuOpen);
 }
 
 function renderHoleTabs() {
   elements.tabs.forEach((tab) => {
     tab.classList.toggle("active", tab.dataset.page === state.page);
   });
+}
+
+function renderCourseSelect() {
+  elements.courseSelect.innerHTML = COURSES.map((course) => `
+    <option value="${course.id}">${course.name}</option>
+  `).join("");
+  elements.courseSelect.value = state.pendingCourseId || DEFAULT_COURSE_ID;
+  elements.confirmCourseButton.disabled = false;
+  elements.courseDetailsButton.disabled = false;
+}
+
+function renderCourseDetails() {
+  if (!state.pendingCourseId) {
+    elements.courseDetailsButton.setAttribute("aria-expanded", "false");
+    elements.courseDetailsPanel.classList.add("hidden");
+    elements.courseDetailsList.innerHTML = "";
+    return;
+  }
+
+  const course = getCourseDefinition(state.pendingCourseId);
+  elements.courseDetailsButton.setAttribute("aria-expanded", String(state.isCourseDetailsOpen));
+  elements.courseDetailsPanel.classList.toggle("hidden", !state.isCourseDetailsOpen);
+  elements.courseDetailsList.innerHTML = state.isCourseDetailsOpen
+    ? course.holes.map((hole) => `
+        <div class="course-detail-item">
+          <strong>第 ${hole.hole} 洞</strong>
+          <span>Par ${hole.par}</span>
+          <span>${hole.distance} 碼</span>
+        </div>
+      `).join("")
+    : "";
 }
 
 function renderHoleList() {
@@ -808,37 +885,41 @@ function renderShotList() {
   const shouldCollapse = trajectory.length > 1 && !state.isShotListExpanded;
   const visibleSteps = shouldCollapse ? [trajectory[trajectory.length - 1]] : trajectory;
   elements.emptyShotNote.classList.toggle("hidden", hole.shotDistances.length > 0);
-  elements.shotList.innerHTML = visibleSteps.map((step) => `
-    <div class="shot-row">
-      <div class="shot-label">第 ${step.shotNumber} 桿</div>
-      <div class="field">
-        <input type="number" value="${step.shotDistance}" readonly>
+  elements.shotList.innerHTML = visibleSteps.map((step) => {
+    const isSuccess = step.zone === "green";
+    return `
+      <div class="shot-row">
+        <div class="shot-row-main">
+          <div class="shot-label">第 ${step.shotNumber} 桿</div>
+          <div class="shot-result-line">
+            <div class="shot-distance-value">${step.shotDistance} 碼</div>
+            <div class="shot-remainder ${isSuccess ? "is-success" : ""}">${step.outcome}</div>
+          </div>
+        </div>
+        <button class="icon-button remove-shot" type="button" data-shot-index="${step.shotNumber - 1}" aria-label="刪除這一桿">×</button>
       </div>
-      <div class="shot-remainder">${step.outcome}</div>
-      <button class="icon-button remove-shot" type="button" data-shot-index="${step.shotNumber - 1}" aria-label="刪除這一桿">×</button>
-    </div>
-  `).join("");
+    `;
+  }).join("");
   renderShotListToggle(trajectory.length);
 }
 
 function renderSaveHoleBar() {
   const hole = currentHole();
   const isCompleted = Boolean(hole.lastEstimate && hole.lastEstimate.estimatedShotsToGreen);
-  elements.saveHoleBar.classList.toggle("hidden", !isCompleted);
-
-  if (!isCompleted) {
-    return;
-  }
+  elements.saveHoleRecordButton.disabled = !isCompleted;
+  elements.saveHoleRecordButton.setAttribute("aria-disabled", String(!isCompleted));
 
   elements.saveHoleHint.textContent = hole.savedRecord
     ? `此洞已儲存，揮桿 ${hole.savedRecord.shots} 次。`
-    : "此洞已進入果嶺，可儲存本洞紀錄。";
+    : isCompleted
+      ? "此洞已進入果嶺，可儲存本洞紀錄。"
+      : "尚未進入果嶺，完成後才能儲存此洞紀錄。";
 }
 
 function renderHoleEditor() {
   const hole = currentHole();
   elements.editorTitle.textContent = `第 ${hole.hole} 洞`;
-  elements.holeSubtitle.textContent = `${currentCourseName()} White tee`;
+  elements.holeSelectorSubtitle.textContent = `${currentCourseName()} White tee`;
   elements.parValue.textContent = hole.par;
   elements.distanceValue.textContent = `${hole.distance} 碼`;
   elements.greenDepthInput.value = hole.greenDepth;
@@ -852,8 +933,9 @@ function renderOverview() {
   const { start, end, label } = currentPageRange();
   const pageHoles = holes.slice(start, end);
   const totalShots = pageHoles.reduce((sum, hole) => sum + (hole.savedRecord ? hole.savedRecord.shots : 0), 0);
-  elements.overviewTitle.textContent = `${label}紀錄與揮桿次數`;
-  elements.totalShotsValue.textContent = String(totalShots);
+  const totalPar = pageHoles.reduce((sum, hole) => sum + hole.par, 0);
+  elements.overviewTitle.textContent = `${label}紀錄`;
+  elements.totalShotsValue.textContent = `${totalShots} / ${totalPar}`;
   elements.overviewList.innerHTML = pageHoles.map((hole) => {
     const resultText = hole.savedRecord ? hole.savedRecord.resultText : "尚無紀錄";
     const shotsText = hole.savedRecord ? `${hole.savedRecord.shots} 桿` : "-";
@@ -904,11 +986,13 @@ function renderRecentRounds() {
         <strong>${formatRoundDate(round.date)}</strong>
         <span>${round.courseName} ${round.teeName || "White tee"}</span>
         <span>${formatRoundRangeText(round)}</span>
-        <span>總桿 ${round.totalShots}</span>
+        <span>總桿 ${formatRoundShotsWithPar(round)}</span>
       </div>
       <div class="round-history-actions">
         <button class="btn btn-accent round-action-button" type="button" data-round-export="${round.id}">匯出 CSV</button>
-        <button class="btn btn-soft round-action-button" type="button" data-round-view="${round.id}" aria-expanded="${round.id === state.selectedRoundId ? "true" : "false"}">細項 ▾</button>
+        <button class="btn btn-soft round-action-button" type="button" data-round-view="${round.id}" aria-expanded="${round.id === state.selectedRoundId ? "true" : "false"}">
+          細項 ${round.id === state.selectedRoundId ? "▴" : "▾"}
+        </button>
       </div>
       ${renderRoundDetail(round.id)}
     </div>
@@ -938,7 +1022,7 @@ function renderRoundDetail(roundId = state.selectedRoundId) {
         </div>
         <div class="stat-card">
           <span>總桿</span>
-          <strong>${round.totalShots}</strong>
+          <strong>${formatRoundShotsWithPar(round)}</strong>
         </div>
       </div>
       <div class="round-detail-hole-list">
@@ -977,13 +1061,18 @@ function renderAll() {
     elements.usernameInput.value = "";
     hideMessage(elements.exportResult);
     setFieldError(elements.shotDistanceError);
+    state.isMenuOpen = false;
+    renderMenuState();
     return;
   }
 
   renderProfile();
+  renderCurrentPageTitle();
+  renderAppTabs();
+  renderAppPageVisibility();
+  renderMenuState();
   renderCourseSelect();
-  renderStats();
-  renderStatsDetailPanel();
+  renderCourseDetails();
   renderHoleTabs();
   renderHoleList();
   renderHoleEditor();
@@ -1078,16 +1167,7 @@ function handleRoundExport(roundId) {
   elements.exportResult.innerHTML = `CSV 已建立：<a href="${url}" download="${filename}">${filename}</a>。如果剛剛沒看到下載，請點這個檔名再下載一次。`;
   elements.exportResult.className = "message is-info";
   elements.exportResult.classList.remove("hidden");
-  
-  const exportButton = document.querySelector(`[data-round-export="${roundId}"]`);
-  if (exportButton) {
-    const actionsContainer = exportButton.closest('.round-history-actions');
-    if (actionsContainer) {
-      actionsContainer.after(elements.exportResult);
-    }
-  }
 
-  showMessage(elements.profileMessage, `已匯出 ${round.courseName} 的 round CSV。`, "is-info");
 }
 
 function handleLogin() {
@@ -1105,13 +1185,19 @@ function handleLogin() {
   hideMessage(elements.loginMessage);
   hideMessage(elements.exportResult);
   renderAll();
-  showMessage(elements.profileMessage, `已登入 ${username}，資料會依帳號與模擬球場分開儲存。`, "is-info");
+  showMessage(elements.profileMessage, `已登入 ${username}，資料會依帳號與球場分開儲存。`, "is-info");
 }
 
 function handleConfirmShot() {
   syncGreenDepthToState();
   const hole = currentHole();
   const shotDistance = sanitizeNumber(elements.shotDistanceInput.value);
+
+  if (hole.lastEstimate && hole.lastEstimate.estimatedShotsToGreen) {
+    setFieldError(elements.shotDistanceError, "已進入果嶺，不用再輸入距離。");
+    elements.shotDistanceInput.value = "";
+    return;
+  }
 
   if (!Number.isFinite(hole.greenDepth) || hole.greenDepth <= 0) {
     setFieldError(elements.shotDistanceError, "請先設定有效的果嶺深度。");
@@ -1155,12 +1241,19 @@ function handleSaveHoleRecord() {
   renderHoleEditor();
   renderOverview();
   renderRoundSavePanel();
-  renderStats();
 }
 
 function handleCourseChange() {
-  const nextCourseId = elements.courseSelect.value;
+  state.pendingCourseId = elements.courseSelect.value;
+  state.isCourseDetailsOpen = false;
+  renderCourseSelect();
+  renderCourseDetails();
+}
+
+function handleConfirmCourseSelection() {
+  const nextCourseId = state.pendingCourseId;
   if (!COURSES.some((course) => course.id === nextCourseId)) {
+    showMessage(elements.profileMessage, "請先選擇球場。", "is-warn");
     return;
   }
 
@@ -1173,19 +1266,52 @@ function handleCourseChange() {
 
   hideMessage(elements.exportResult);
   saveCurrentUserData();
+  state.activeAppPage = "play";
   renderAll();
-  showMessage(elements.profileMessage, `目前模擬球場已切換為 ${currentCourseName()}。`, "is-info");
+  showMessage(elements.profileMessage, `已選擇 ${currentCourseName()}，已切換到紀錄桿數。`, "is-info");
 }
 
 function bindEvents() {
   elements.loginButton.addEventListener("click", handleLogin);
+  elements.backButton.addEventListener("click", () => {
+    const previousPageId = previousAppPageId();
+    if (!previousPageId) {
+      return;
+    }
+
+    setActiveAppPage(previousPageId);
+    renderCurrentPageTitle();
+  });
+  elements.menuButton.addEventListener("click", () => {
+    state.isMenuOpen = !state.isMenuOpen;
+    renderMenuState();
+  });
+  elements.closeMenuButton.addEventListener("click", () => {
+    state.isMenuOpen = false;
+    renderMenuState();
+  });
+  elements.menuOverlay.addEventListener("click", () => {
+    state.isMenuOpen = false;
+    renderMenuState();
+  });
+  elements.appTabs.addEventListener("click", (event) => {
+    const tab = event.target.closest("[data-app-page]");
+    if (!tab) {
+      return;
+    }
+
+    setActiveAppPage(tab.dataset.appPage);
+  });
+
   elements.logoutButton.addEventListener("click", () => {
     state.profile.username = "";
     state.profile.selectedCourseId = DEFAULT_COURSE_ID;
+    state.pendingCourseId = DEFAULT_COURSE_ID;
     state.courses = createDefaultCourseMap();
     state.rounds = [];
     state.selectedRoundId = "";
     state.isRoundHistoryExpanded = false;
+    state.isMenuOpen = false;
     removeStorageItem(CURRENT_USER_KEY);
     hideMessage(elements.profileMessage);
     hideMessage(elements.exportResult);
@@ -1203,6 +1329,7 @@ function bindEvents() {
       return;
     }
 
+    const savedConfig = getRoundSaveConfig();
     const savedRound = saveCurrentRoundHistory();
     if (!savedRound.ok) {
       showMessage(elements.saveRoundMessage, savedRound.message, "is-warn");
@@ -1211,19 +1338,18 @@ function bindEvents() {
 
     resetCurrentCourseProgress();
     saveCurrentUserData();
-    renderRoundSavePanel();
-    renderStats();
-    renderHoleTabs();
-    renderHoleList();
-    renderHoleEditor();
-    renderOverview();
-    renderRecentRounds();
-    showMessage(elements.saveRoundMessage, `已儲存${getRoundSaveConfig().label} round，並已重置該區紀錄。`, "is-info");
+    state.activeAppPage = "history";
+    renderAll();
+    showMessage(elements.exportResult, `已儲存${savedConfig.label} round，已切換到歷史紀錄。`, "is-info");
   });
   elements.courseSelect.addEventListener("change", handleCourseChange);
-  elements.toggleStatsButton.addEventListener("click", () => {
-    state.isStatsOpen = !state.isStatsOpen;
-    renderStatsDetailPanel();
+  elements.confirmCourseButton.addEventListener("click", handleConfirmCourseSelection);
+  elements.courseDetailsButton.addEventListener("click", () => {
+    if (!state.pendingCourseId) {
+      return;
+    }
+    state.isCourseDetailsOpen = !state.isCourseDetailsOpen;
+    renderCourseDetails();
   });
   elements.toggleGreenDepthButton.addEventListener("click", () => {
     state.isGreenDepthOpen = !state.isGreenDepthOpen;
@@ -1275,6 +1401,9 @@ function bindEvents() {
 
   elements.confirmShotButton.addEventListener("click", handleConfirmShot);
   elements.saveHoleRecordButton.addEventListener("click", handleSaveHoleRecord);
+  elements.goSummaryButton.addEventListener("click", () => {
+    setActiveAppPage("summary");
+  });
 
   elements.shotDistanceInput.addEventListener("keydown", (event) => {
     if (event.key === "Enter") {
@@ -1308,7 +1437,6 @@ function bindEvents() {
     renderHoleList();
     renderOverview();
     renderRoundSavePanel();
-    renderStats();
   });
 
   elements.shotList.addEventListener("click", (event) => {
