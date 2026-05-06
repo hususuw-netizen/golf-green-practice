@@ -8,7 +8,7 @@
 </head>
 <body>
   <main class="app-shell">
-    <section class="hero">
+    <section id="heroPanel" class="hero">
       <div class="hero-copy">
         <p class="eyebrow">Practice to Course</p>
         <h1>高爾夫上果嶺紀錄工具</h1>
@@ -19,217 +19,207 @@
     <section id="loginPanel" class="panel login-panel">
       <div class="section-head">
         <div>
-          <p class="section-kicker">登入</p>
           <h2>依帳號名稱分開儲存資料</h2>
         </div>
       </div>
       <div class="field">
         <label for="usernameInput">帳號名稱</label>
         <input id="usernameInput" type="text" maxlength="24" placeholder="例如：Eric">
-        <small>每個帳號會有自己的 18 洞紀錄與 Excel 匯出資料。</small>
+        <small>每個帳號會有自己的球場、球洞與歷史 round。</small>
       </div>
-      <button id="loginButton" class="btn btn-primary" type="button">登入</button>
+      <button id="loginButton" class="btn btn-primary full-width" type="button">登入</button>
       <div id="loginMessage" class="message is-error hidden"></div>
     </section>
 
     <section id="appPanel" class="hidden">
-      <section class="panel account-bar">
-        <div class="account-row">
+      <section class="panel app-header">
+        <div class="app-header-row">
+          <div class="app-header-main">
+            <button id="backButton" class="back-button" type="button" aria-label="返回上一頁">←</button>
+            <h2 id="currentPageTitle">選擇球場</h2>
+          </div>
+          <button id="menuButton" class="menu-button" type="button" aria-label="開啟選單" aria-expanded="false">
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
+        </div>
+      </section>
+
+      <div id="menuOverlay" class="menu-overlay hidden"></div>
+      <aside id="menuDrawer" class="menu-drawer hidden" aria-hidden="true">
+        <div class="menu-drawer-head">
           <div>
             <p class="section-kicker">使用者</p>
             <strong id="welcomeText"></strong>
           </div>
-          <button id="logoutButton" class="btn btn-soft" type="button">登出</button>
+          <button id="closeMenuButton" class="menu-close-button" type="button" aria-label="關閉選單">×</button>
         </div>
-        <div class="stats-grid">
-          <div class="stat-card">
-            <span>已完成洞數</span>
-            <strong id="savedHolesValue">0 / 18</strong>
-          </div>
-          <div class="stat-card">
-            <span>總桿數</span>
-            <strong id="allShotsValue">0</strong>
-          </div>
-        </div>
-        <div class="stats-detail-bar">
-          <span class="stats-detail-label">分段桿數</span>
-          <button id="toggleStatsButton" class="toggle-icon-button" type="button" aria-label="切換分段桿數" aria-expanded="false">
-            <span class="toggle-arrow">▾</span>
-          </button>
-        </div>
-        <div id="statsDetailPanel" class="stats-grid hidden">
-          <div class="stat-card">
-            <span>前 9 桿數</span>
-            <strong id="frontNineShotsValue">0</strong>
-          </div>
-          <div class="stat-card">
-            <span>後 9 桿數</span>
-            <strong id="backNineShotsValue">0</strong>
-          </div>
-        </div>
-        <div id="exportResult" class="message is-info hidden"></div>
-        <div id="profileMessage" class="message is-info hidden"></div>
-      </section>
+        <nav id="appTabs" class="menu-nav" aria-label="功能分頁"></nav>
+        <button id="logoutButton" class="btn btn-soft full-width menu-logout-button" type="button">登出</button>
+      </aside>
 
-      <section class="panel course-panel">
-        <div class="section-head">
-          <div>
-            <p class="section-kicker">模擬球場</p>
-            <h2>選擇要套用的球場</h2>
-          </div>
-        </div>
-        <div class="field">
-          <label for="courseSelect">球場名稱</label>
-          <select id="courseSelect"></select>
-        </div>
-      </section>
-
-      <section class="panel selector-panel">
-        <div class="section-head">
-          <div>
-            <p class="section-kicker">球洞</p>
-            <h2>選擇球洞</h2>
-          </div>
-          <div class="switch-row hole-page-switch">
-            <button class="range-tab hole-page-tab active" type="button" data-page="front">前 9</button>
-            <button class="range-tab hole-page-tab" type="button" data-page="back">後 9</button>
-          </div>
-        </div>
-        <div id="holeList" class="hole-grid"></div>
-      </section>
-
-      <section class="panel hole-panel">
-        <div class="hole-hero">
-          <div>
-            <p class="section-kicker">目前球洞</p>
-            <h2 id="editorTitle">第 1 洞</h2>
-            <p id="holeSubtitle" class="hero-text"></p>
-          </div>
-          <div class="hole-badges">
-            <div class="badge-card">
-              <span>Par</span>
-              <strong id="parValue">5</strong>
-            </div>
-            <div class="badge-card">
-              <span>長度</span>
-              <strong id="distanceValue">495 碼</strong>
-            </div>
-          </div>
-        </div>
-
-        <div class="section-head compact-head">
-          <div>
-            <p class="section-kicker">果嶺設定</p>
-            <h2>果嶺深度（預設 20 碼）</h2>
-          </div>
-          <button id="toggleGreenDepthButton" class="toggle-icon-button" type="button" aria-label="切換果嶺深度設定" aria-expanded="false">
-            <span class="toggle-arrow">▾</span>
-          </button>
-        </div>
-
-        <div id="greenDepthPanel" class="input-stack hidden">
-          <div class="field-card">
-            <div class="field">
-              <label for="greenDepthInput">果嶺深度（碼）</label>
-              <input id="greenDepthInput" type="number" min="1" max="80" placeholder="20">
-              <small>用來判斷是否已進入果嶺範圍。</small>
-            </div>
-          </div>
-        </div>
-
-        <div class="shot-section">
+      <section id="coursePage" class="app-page">
+        <section class="panel course-panel">
           <div class="section-head">
             <div>
-              <p class="section-kicker">擊球距離</p>
-              <h2>一桿一桿輸入並確認</h2>
+              <h2>選擇球場</h2>
             </div>
-            <button id="resetHoleButton" class="btn btn-danger hole-reset-button" type="button">清除此洞</button>
           </div>
+          <div class="field">
+            <select id="courseSelect"></select>
+          </div>
+          <div class="course-action-row">
+            <button id="courseDetailsButton" class="btn btn-soft detail-button" type="button" aria-expanded="false">詳細資料</button>
+            <button id="confirmCourseButton" class="btn btn-primary" type="button">確認選擇</button>
+          </div>
+          <div id="courseDetailsPanel" class="course-details hidden">
+            <div id="courseDetailsList" class="course-detail-grid"></div>
+          </div>
+          <div id="profileMessage" class="message is-info hidden"></div>
+        </section>
+      </section>
 
-          <div class="shot-entry-card">
-            <div class="field">
-              <label for="shotDistanceInput">本桿擊球距離（碼）</label>
-              <input id="shotDistanceInput" type="number" min="1" max="500" placeholder="例如：170">
-              <small>輸入這一桿打了多遠，再按確定加入紀錄。</small>
-              <div id="shotDistanceError" class="field-error hidden"></div>
+      <section id="playPage" class="app-page">
+        <section class="panel selector-panel">
+          <div class="section-head">
+            <div>
+              <p id="holeSelectorSubtitle" class="selector-subtitle"></p>
             </div>
-            <button id="confirmShotButton" class="btn btn-primary" type="button">✓ 確定這一桿</button>
+            <div class="switch-row hole-page-switch">
+              <button class="range-tab hole-page-tab active" type="button" data-page="front">前 9</button>
+              <button class="range-tab hole-page-tab" type="button" data-page="back">後 9</button>
+            </div>
           </div>
+          <div id="holeList" class="hole-grid"></div>
+        </section>
 
-          <div class="shot-toolbar">
-            <span class="shot-toolbar-label">逐桿紀錄</span>
-            <button id="toggleShotListButton" class="toggle-icon-button hidden" type="button" aria-label="切換逐桿紀錄" aria-expanded="false">
+        <section class="panel hole-panel">
+          <div class="play-card-grid">
+            <div class="play-card current-hole-card">
+              <h2 id="editorTitle">第 1 洞</h2>
+              <div class="hole-badges">
+                <div class="badge-card">
+                  <span>Par</span>
+                  <strong id="parValue">5</strong>
+                </div>
+                <div class="badge-card">
+                  <span>長度</span>
+                  <strong id="distanceValue">495 碼</strong>
+                </div>
+              </div>
+            </div>
+
+            <div class="play-card shot-entry-card">
+              <div class="section-head">
+                <div>
+                  <h2>輸入本桿擊球距離（碼）</h2>
+                </div>
+                <button id="toggleGreenDepthButton" class="settings-button" type="button" aria-label="開啟果嶺深度設定" aria-expanded="false">
+                  <span class="settings-glyph">⚙</span>
+                </button>
+              </div>
+              <div id="greenDepthPanel" class="input-stack hidden">
+                <div class="field">
+                  <label for="greenDepthInput">果嶺深度（碼）</label>
+                  <input id="greenDepthInput" type="number" min="1" max="80" placeholder="20">
+                </div>
+              </div>
+              <div class="field">
+                <input id="shotDistanceInput" type="number" min="1" max="500" placeholder="例如：170">
+                <div id="shotDistanceError" class="field-error hidden"></div>
+              </div>
+              <button id="confirmShotButton" class="btn btn-primary full-width" type="button">確定這一桿</button>
+            </div>
+
+            <div class="play-card shot-record-card">
+              <div class="shot-toolbar">
+                <div>
+                  <h2>逐桿紀錄</h2>
+                </div>
+                <div class="shot-toolbar-actions">
+                  <button id="resetHoleButton" class="btn btn-danger hole-reset-button" type="button">清除此洞</button>
+                  <button id="toggleShotListButton" class="toggle-icon-button hidden" type="button" aria-label="切換逐桿紀錄" aria-expanded="false">
+                    <span class="toggle-arrow">▾</span>
+                  </button>
+                </div>
+              </div>
+              <div id="shotList" class="shot-list"></div>
+              <div id="emptyShotNote" class="empty-note">還沒有擊球資料。</div>
+            </div>
+          </div>
+        </section>
+
+        <div id="saveHoleBar" class="save-hole-bar">
+          <button id="saveHoleRecordButton" class="btn btn-success full-width" type="button">儲存此洞紀錄</button>
+          <span id="saveHoleHint">進入果嶺後可儲存本洞揮桿結果</span>
+          <button id="goSummaryButton" class="btn btn-soft full-width" type="button">前往總表</button>
+        </div>
+      </section>
+
+      <section id="summaryPage" class="app-page">
+        <section class="panel overview-panel">
+          <div class="section-head">
+            <div>
+              <h2 id="overviewTitle">前 9 洞紀錄與揮桿次數</h2>
+            </div>
+            <div class="overview-total">
+              <span>總揮桿</span>
+              <strong id="totalShotsValue">0</strong>
+            </div>
+          </div>
+          <div id="overviewList" class="overview-list"></div>
+        </section>
+
+        <section class="panel round-save-panel">
+          <div class="section-head">
+            <div>
+              <h2>儲存本次 Round</h2>
+            </div>
+          </div>
+          <div class="switch-row round-mode-switch" role="tablist" aria-label="Round 儲存範圍">
+            <button class="range-tab round-mode-tab" type="button" data-round-save-mode="front">前 9</button>
+            <button class="range-tab round-mode-tab" type="button" data-round-save-mode="back">後 9</button>
+            <button class="range-tab round-mode-tab active" type="button" data-round-save-mode="full">18 洞</button>
+          </div>
+          <div class="round-save-grid">
+            <div class="stat-card">
+              <span>完成狀態</span>
+              <strong id="roundSaveStatusValue">0 / 18</strong>
+            </div>
+            <div class="stat-card">
+              <span>目前球場</span>
+              <strong id="roundSaveCourseValue">棕梠湖球場</strong>
+            </div>
+          </div>
+          <button id="saveRoundButton" class="btn btn-success full-width" type="button">儲存本次 Round</button>
+          <div id="saveRoundMessage" class="message is-info hidden"></div>
+        </section>
+      </section>
+
+      <section id="historyPage" class="app-page">
+        <section class="panel round-history-panel">
+          <div class="section-head">
+            <div>
+              <h2>歷史紀錄</h2>
+            </div>
+            <button id="toggleRoundHistoryButton" class="toggle-icon-button hidden" type="button" aria-label="切換歷史紀錄" aria-expanded="false">
               <span class="toggle-arrow">▾</span>
             </button>
           </div>
-
-          <div id="shotList" class="shot-list"></div>
-          <div id="emptyShotNote" class="empty-note">還沒有擊球資料。每次輸入一桿距離後按「確定這一桿」，系統會自動判斷是剩餘距離、超出果嶺，還是已進果嶺。</div>
-        </div>
-      </section>
-
-      <div id="saveHoleBar" class="save-hole-bar hidden">
-        <button id="saveHoleRecordButton" class="btn btn-success" type="button">儲存此洞紀錄</button>
-        <span id="saveHoleHint">進入果嶺後可儲存本洞揮桿結果</span>
-      </div>
-
-      <section class="panel overview-panel">
-        <div class="section-head">
-          <div>
-            <p class="section-kicker">總表</p>
-            <h2 id="overviewTitle">前 9 洞紀錄與揮桿次數</h2>
-          </div>
-          <div class="overview-total">
-            <span>總揮桿</span>
-            <strong id="totalShotsValue">0</strong>
-          </div>
-        </div>
-
-        <div id="overviewList" class="overview-list"></div>
-      </section>
-
-      <section class="panel round-save-panel">
-        <div class="section-head">
-          <div>
-            <p class="section-kicker">Round</p>
-            <h2>儲存本次 Round</h2>
-          </div>
-        </div>
-        <div class="switch-row round-mode-switch" role="tablist" aria-label="Round 儲存範圍">
-          <button class="range-tab round-mode-tab" type="button" data-round-save-mode="front">前 9</button>
-          <button class="range-tab round-mode-tab" type="button" data-round-save-mode="back">後 9</button>
-          <button class="range-tab round-mode-tab active" type="button" data-round-save-mode="full">18 洞</button>
-        </div>
-        <div class="round-save-grid">
-          <div class="stat-card">
-            <span>完成狀態</span>
-            <strong id="roundSaveStatusValue">0 / 18</strong>
-          </div>
-          <div class="stat-card">
-            <span>目前球場</span>
-            <strong id="roundSaveCourseValue">棕梠湖球場</strong>
-          </div>
-        </div>
-        <button id="saveRoundButton" class="btn btn-success" type="button">儲存本次 Round</button>
-        <div id="saveRoundMessage" class="message is-info hidden"></div>
-      </section>
-
-      <section class="panel round-history-panel">
-        <div class="section-head">
-          <div>
-            <p class="section-kicker">History</p>
-            <h2>最近幾次打球成績</h2>
-          </div>
-          <button id="toggleRoundHistoryButton" class="toggle-icon-button hidden" type="button" aria-label="切換最近幾次打球成績" aria-expanded="false">
-            <span class="toggle-arrow">▾</span>
-          </button>
-        </div>
-        <div id="recentRoundsList" class="round-history-list"></div>
-        <div id="recentRoundsEmpty" class="empty-note hidden">目前還沒有 round 歷史資料。</div>
+          <div id="exportResult" class="message is-info hidden"></div>
+          <div id="recentRoundsList" class="round-history-list"></div>
+          <div id="recentRoundsEmpty" class="empty-note hidden">目前還沒有 round 歷史資料。</div>
+        </section>
       </section>
     </section>
   </main>
 
+  <script src="pages-login.js"></script>
+  <script src="pages-course.js"></script>
+  <script src="pages-play.js"></script>
+  <script src="pages-summary.js"></script>
+  <script src="pages-history.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
