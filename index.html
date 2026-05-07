@@ -12,7 +12,7 @@
       <div class="hero-copy">
         <p class="eyebrow">Practice to Course</p>
         <h1>高爾夫上果嶺紀錄工具</h1>
-        <p class="hero-text">在練習場逐桿輸入擊球距離，自動計算剩餘距離、是否進果嶺，並把 18 洞紀錄匯出給 Excel 使用。</p>
+        <p class="hero-text">依帳號、球場與 tee 分開儲存逐桿紀錄，支援 18 洞總表與歷史 round 匯出。</p>
       </div>
     </section>
 
@@ -23,9 +23,9 @@
         </div>
       </div>
       <div class="field">
-        <label for="usernameInput">帳號名稱</label>
+        <label for="usernameInput">使用者名稱</label>
         <input id="usernameInput" type="text" maxlength="24" placeholder="例如：Eric">
-        <small>每個帳號會有自己的球場、球洞與歷史 round。</small>
+        <small>同一個帳號會保留個人球場與 round 紀錄。</small>
       </div>
       <button id="loginButton" class="btn btn-primary full-width" type="button">登入</button>
       <div id="loginMessage" class="message is-error hidden"></div>
@@ -36,7 +36,7 @@
         <div class="app-header-row">
           <div class="app-header-main">
             <button id="backButton" class="back-button" type="button" aria-label="返回上一頁">←</button>
-            <h2 id="currentPageTitle">選擇球場</h2>
+            <h2 id="currentPageTitle">球場</h2>
           </div>
           <button id="menuButton" class="menu-button" type="button" aria-label="開啟選單" aria-expanded="false">
             <span></span>
@@ -55,7 +55,7 @@
           </div>
           <button id="closeMenuButton" class="menu-close-button" type="button" aria-label="關閉選單">×</button>
         </div>
-        <nav id="appTabs" class="menu-nav" aria-label="功能分頁"></nav>
+        <nav id="appTabs" class="menu-nav" aria-label="主選單"></nav>
         <button id="logoutButton" class="btn btn-soft full-width menu-logout-button" type="button">登出</button>
       </aside>
 
@@ -68,6 +68,10 @@
           </div>
           <div class="field">
             <select id="courseSelect"></select>
+          </div>
+          <div id="teeSwitch" class="switch-row tee-switch" role="tablist" aria-label="選擇發球台">
+            <button class="range-tab tee-tab active" type="button" data-tee="white">White tee</button>
+            <button class="range-tab tee-tab" type="button" data-tee="red">Red tee</button>
           </div>
           <div class="course-action-row">
             <button id="courseDetailsButton" class="btn btn-soft detail-button" type="button" aria-expanded="false">詳細資料</button>
@@ -115,7 +119,7 @@
                 <div>
                   <h2>輸入本桿擊球距離（碼）</h2>
                 </div>
-                <button id="toggleGreenDepthButton" class="settings-button" type="button" aria-label="開啟果嶺深度設定" aria-expanded="false">
+                <button id="toggleGreenDepthButton" class="settings-button" type="button" aria-label="設定果嶺深度" aria-expanded="false">
                   <span class="settings-glyph">⚙</span>
                 </button>
               </div>
@@ -139,20 +143,20 @@
                 </div>
                 <div class="shot-toolbar-actions">
                   <button id="resetHoleButton" class="btn btn-danger hole-reset-button" type="button">清除此洞</button>
-                  <button id="toggleShotListButton" class="toggle-icon-button hidden" type="button" aria-label="切換逐桿紀錄" aria-expanded="false">
+                  <button id="toggleShotListButton" class="toggle-icon-button hidden" type="button" aria-label="展開逐桿紀錄" aria-expanded="false">
                     <span class="toggle-arrow">▾</span>
                   </button>
                 </div>
               </div>
               <div id="shotList" class="shot-list"></div>
-              <div id="emptyShotNote" class="empty-note">還沒有擊球資料。</div>
+              <div id="emptyShotNote" class="empty-note">還沒有揮桿資料。</div>
             </div>
           </div>
         </section>
 
         <div id="saveHoleBar" class="save-hole-bar">
           <button id="saveHoleRecordButton" class="btn btn-success full-width" type="button">儲存此洞紀錄</button>
-          <span id="saveHoleHint">進入果嶺後可儲存本洞揮桿結果</span>
+          <span id="saveHoleHint">尚未進入果嶺，完成後才能儲存此洞紀錄。</span>
           <button id="goSummaryButton" class="btn btn-soft full-width" type="button">前往總表</button>
         </div>
       </section>
@@ -183,11 +187,11 @@
         <section class="panel overview-panel">
           <div class="section-head">
             <div>
-              <h2 id="overviewTitle">前 9 洞紀錄與揮桿次數</h2>
+              <h2 id="overviewTitle">18 洞紀錄</h2>
             </div>
             <div class="overview-total">
               <span>總揮桿</span>
-              <strong id="totalShotsValue">0</strong>
+              <strong id="totalShotsValue">0 / 72</strong>
             </div>
           </div>
           <div id="overviewList" class="overview-list"></div>
@@ -200,22 +204,18 @@
             <div>
               <h2>歷史紀錄</h2>
             </div>
-            <button id="toggleRoundHistoryButton" class="toggle-icon-button hidden" type="button" aria-label="切換歷史紀錄" aria-expanded="false">
+            <button id="toggleRoundHistoryButton" class="toggle-icon-button hidden" type="button" aria-label="展開歷史紀錄" aria-expanded="false">
               <span class="toggle-arrow">▾</span>
             </button>
           </div>
           <div id="exportResult" class="message is-info hidden"></div>
           <div id="recentRoundsList" class="round-history-list"></div>
-          <div id="recentRoundsEmpty" class="empty-note hidden">目前還沒有 round 歷史資料。</div>
+          <div id="recentRoundsEmpty" class="empty-note hidden">還沒有 round 歷史紀錄。</div>
         </section>
       </section>
     </section>
   </main>
 
-  <script src="pages-course.js"></script>
-  <script src="pages-play.js"></script>
-  <script src="pages-summary.js"></script>
-  <script src="pages-history.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

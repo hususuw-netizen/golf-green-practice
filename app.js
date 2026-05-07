@@ -1,63 +1,131 @@
+const APP_PAGES = [
+  { id: "course", label: "\u7403\u5834", panelId: "coursePage" },
+  { id: "play", label: "\u7d00\u9304\u687f\u6578", panelId: "playPage" },
+  { id: "summary", label: "\u7e3d\u8868", panelId: "summaryPage" },
+  { id: "history", label: "\u6b77\u53f2", panelId: "historyPage" }
+];
+
 const COURSES = [
   {
     id: "palm-lake",
-    name: "棕梠湖球場",
-    holes: [
-      { hole: 1, par: 5, distance: 495 },
-      { hole: 2, par: 4, distance: 390 },
-      { hole: 3, par: 3, distance: 154 },
-      { hole: 4, par: 4, distance: 314 },
-      { hole: 5, par: 4, distance: 341 },
-      { hole: 6, par: 3, distance: 180 },
-      { hole: 7, par: 4, distance: 374 },
-      { hole: 8, par: 5, distance: 485 },
-      { hole: 9, par: 4, distance: 397 },
-      { hole: 10, par: 4, distance: 359 },
-      { hole: 11, par: 4, distance: 390 },
-      { hole: 12, par: 4, distance: 408 },
-      { hole: 13, par: 5, distance: 567 },
-      { hole: 14, par: 3, distance: 173 },
-      { hole: 15, par: 4, distance: 410 },
-      { hole: 16, par: 4, distance: 363 },
-      { hole: 17, par: 3, distance: 149 },
-      { hole: 18, par: 5, distance: 478 }
+    name: "\u68d5\u68a0\u6e56\u7403\u5834",
+    tees: [
+      {
+        id: "white",
+        name: "White tee",
+        holes: [
+          { hole: 1, distance: 495, par: 5 },
+          { hole: 2, distance: 390, par: 4 },
+          { hole: 3, distance: 154, par: 3 },
+          { hole: 4, distance: 314, par: 4 },
+          { hole: 5, distance: 341, par: 4 },
+          { hole: 6, distance: 180, par: 3 },
+          { hole: 7, distance: 374, par: 4 },
+          { hole: 8, distance: 485, par: 5 },
+          { hole: 9, distance: 397, par: 4 },
+          { hole: 10, distance: 359, par: 4 },
+          { hole: 11, distance: 390, par: 4 },
+          { hole: 12, distance: 408, par: 4 },
+          { hole: 13, distance: 567, par: 5 },
+          { hole: 14, distance: 173, par: 3 },
+          { hole: 15, distance: 410, par: 4 },
+          { hole: 16, distance: 363, par: 4 },
+          { hole: 17, distance: 149, par: 3 },
+          { hole: 18, distance: 478, par: 5 }
+        ]
+      },
+      {
+        id: "red",
+        name: "Red tee",
+        holes: [
+          { hole: 1, distance: 429, par: 5 },
+          { hole: 2, distance: 357, par: 4 },
+          { hole: 3, distance: 100, par: 3 },
+          { hole: 4, distance: 253, par: 4 },
+          { hole: 5, distance: 282, par: 4 },
+          { hole: 6, distance: 126, par: 3 },
+          { hole: 7, distance: 319, par: 4 },
+          { hole: 8, distance: 425, par: 5 },
+          { hole: 9, distance: 361, par: 4 },
+          { hole: 10, distance: 306, par: 4 },
+          { hole: 11, distance: 317, par: 4 },
+          { hole: 12, distance: 360, par: 4 },
+          { hole: 13, distance: 510, par: 5 },
+          { hole: 14, distance: 141, par: 3 },
+          { hole: 15, distance: 332, par: 4 },
+          { hole: 16, distance: 302, par: 4 },
+          { hole: 17, distance: 75, par: 3 },
+          { hole: 18, distance: 426, par: 5 }
+        ]
+      }
     ]
   },
   {
-    id: "hsinyi",
-    name: "信誼球場",
-    holes: [
-      { hole: 1, par: 4, distance: 392 },
-      { hole: 2, par: 4, distance: 448 },
-      { hole: 3, par: 3, distance: 196 },
-      { hole: 4, par: 5, distance: 531 },
-      { hole: 5, par: 4, distance: 408 },
-      { hole: 6, par: 3, distance: 220 },
-      { hole: 7, par: 4, distance: 374 },
-      { hole: 8, par: 5, distance: 627 },
-      { hole: 9, par: 4, distance: 472 },
-      { hole: 10, par: 4, distance: 418 },
-      { hole: 11, par: 4, distance: 449 },
-      { hole: 12, par: 4, distance: 449 },
-      { hole: 13, par: 3, distance: 206 },
-      { hole: 14, par: 4, distance: 406 },
-      { hole: 15, par: 5, distance: 530 },
-      { hole: 16, par: 4, distance: 407 },
-      { hole: 17, par: 3, distance: 194 },
-      { hole: 18, par: 5, distance: 495 }
+    id: "north-bay",
+    name: "\u5317\u6d77\u7403\u5834",
+    tees: [
+      {
+        id: "white",
+        name: "White tee",
+        holes: [
+          { hole: 1, distance: 366, par: 4 },
+          { hole: 2, distance: 391, par: 4 },
+          { hole: 3, distance: 178, par: 3 },
+          { hole: 4, distance: 353, par: 4 },
+          { hole: 5, distance: 531, par: 5 },
+          { hole: 6, distance: 187, par: 3 },
+          { hole: 7, distance: 399, par: 4 },
+          { hole: 8, distance: 501, par: 5 },
+          { hole: 9, distance: 403, par: 4 },
+          { hole: 10, distance: 533, par: 5 },
+          { hole: 11, distance: 157, par: 3 },
+          { hole: 12, distance: 413, par: 4 },
+          { hole: 13, distance: 420, par: 4 },
+          { hole: 14, distance: 399, par: 4 },
+          { hole: 15, distance: 185, par: 3 },
+          { hole: 16, distance: 291, par: 4 },
+          { hole: 17, distance: 400, par: 4 },
+          { hole: 18, distance: 525, par: 5 }
+        ]
+      },
+      {
+        id: "red",
+        name: "Red tee",
+        holes: [
+          { hole: 1, distance: 316, par: 4 },
+          { hole: 2, distance: 350, par: 4 },
+          { hole: 3, distance: 136, par: 3 },
+          { hole: 4, distance: 238, par: 4 },
+          { hole: 5, distance: 481, par: 5 },
+          { hole: 6, distance: 110, par: 3 },
+          { hole: 7, distance: 333, par: 4 },
+          { hole: 8, distance: 398, par: 5 },
+          { hole: 9, distance: 384, par: 4 },
+          { hole: 10, distance: 487, par: 5 },
+          { hole: 11, distance: 138, par: 3 },
+          { hole: 12, distance: 388, par: 4 },
+          { hole: 13, distance: 323, par: 4 },
+          { hole: 14, distance: 337, par: 4 },
+          { hole: 15, distance: 150, par: 3 },
+          { hole: 16, distance: 273, par: 4 },
+          { hole: 17, distance: 331, par: 4 },
+          { hole: 18, distance: 444, par: 5 }
+        ]
+      }
     ]
   }
 ];
 
 const DEFAULT_COURSE_ID = COURSES[0].id;
+const DEFAULT_TEE_ID = COURSES[0].tees[0].id;
 const USER_INDEX_KEY = "golf-users-index";
 const CURRENT_USER_KEY = "golf-current-user";
-const LEGACY_STORAGE_KEY = "golf-green-estimator";
 
 const state = {
   activeAppPage: "course",
   isMenuOpen: false,
   pendingCourseId: DEFAULT_COURSE_ID,
+  pendingTeeId: DEFAULT_TEE_ID,
   page: "front",
   selectedHoleIndex: 0,
   selectedRoundId: "",
@@ -66,9 +134,11 @@ const state = {
   isGreenDepthOpen: false,
   isShotListExpanded: false,
   isRoundHistoryExpanded: false,
+  saveHoleNextHint: "",
   profile: {
     username: "",
-    selectedCourseId: DEFAULT_COURSE_ID
+    selectedCourseId: DEFAULT_COURSE_ID,
+    selectedTeeId: DEFAULT_TEE_ID
   },
   courses: {},
   rounds: []
@@ -94,6 +164,7 @@ const elements = {
   profileMessage: document.getElementById("profileMessage"),
   exportResult: document.getElementById("exportResult"),
   courseSelect: document.getElementById("courseSelect"),
+  teeTabs: Array.from(document.querySelectorAll(".tee-tab")),
   courseDetailsButton: document.getElementById("courseDetailsButton"),
   confirmCourseButton: document.getElementById("confirmCourseButton"),
   courseDetailsPanel: document.getElementById("courseDetailsPanel"),
@@ -114,9 +185,9 @@ const elements = {
   resetHoleButton: document.getElementById("resetHoleButton"),
   shotList: document.getElementById("shotList"),
   emptyShotNote: document.getElementById("emptyShotNote"),
-  saveHoleBar: document.getElementById("saveHoleBar"),
   saveHoleRecordButton: document.getElementById("saveHoleRecordButton"),
   saveHoleHint: document.getElementById("saveHoleHint"),
+  saveHoleNextHint: document.getElementById("saveHoleNextHint"),
   goSummaryButton: document.getElementById("goSummaryButton"),
   overviewTitle: document.getElementById("overviewTitle"),
   overviewList: document.getElementById("overviewList"),
@@ -131,38 +202,78 @@ const elements = {
   recentRoundsEmpty: document.getElementById("recentRoundsEmpty")
 };
 
-function makeDefaultHoleConfig(baseHole) {
-  return {
-    ...baseHole,
-    greenDepth: 20,
-    shotDistances: [],
-    lastEstimate: null,
-    savedRecord: null
-  };
-}
-
-function resolveGreenDepth(savedHole) {
-  const numeric = sanitizeNumber(savedHole.greenDepth);
-  return numeric === "" ? 20 : numeric;
-}
-
-function createEmptyCourseState(course) {
-  return course.holes.map(makeDefaultHoleConfig);
-}
-
-function createDefaultCourseMap() {
-  return Object.fromEntries(
-    COURSES.map((course) => [course.id, createEmptyCourseState(course)])
-  );
-}
-
-function sanitizeNumber(value) {
-  if (value === "" || value === null || value === undefined) {
-    return "";
+function setText(selector, text) {
+  const node = document.querySelector(selector);
+  if (node) {
+    node.textContent = text;
   }
+}
 
-  const numeric = Number(value);
-  return Number.isFinite(numeric) ? numeric : "";
+function setAttr(selector, attr, value) {
+  const node = document.querySelector(selector);
+  if (node) {
+    node.setAttribute(attr, value);
+  }
+}
+
+function ensureSaveHoleNextHint() {
+  if (elements.saveHoleNextHint) {
+    return elements.saveHoleNextHint;
+  }
+  const hint = document.createElement("span");
+  hint.id = "saveHoleNextHint";
+  hint.className = "save-hole-next-hint hidden";
+  elements.saveHoleHint.insertAdjacentElement("beforebegin", hint);
+  elements.saveHoleNextHint = hint;
+  return hint;
+}
+
+function initStaticText() {
+  document.title = "\u9ad8\u723e\u592b\u4e0a\u679c\u5dba\u7d00\u9304\u5de5\u5177";
+  setText(".hero h1", "\u9ad8\u723e\u592b\u4e0a\u679c\u5dba\u7d00\u9304\u5de5\u5177");
+  setText(".hero-text", "\u4f9d\u5e33\u865f\u3001\u7403\u5834\u8207 tee \u5206\u958b\u5132\u5b58\u7d00\u9304\uff0c\u652f\u63f4 18 \u6d1e\u9010\u687f\u7d00\u9304\u3001\u7e3d\u8868\u8207\u6b77\u53f2\u532f\u51fa\u3002");
+  setText("#loginPanel h2", "\u4f9d\u5e33\u865f\u540d\u7a31\u5206\u958b\u5132\u5b58\u8cc7\u6599");
+  setText("label[for='usernameInput']", "\u4f7f\u7528\u8005\u540d\u7a31");
+  setAttr("#usernameInput", "placeholder", "\u4f8b\u5982\uff1aEric");
+  setText("#loginPanel small", "\u540c\u4e00\u500b\u5e33\u865f\u6703\u4fdd\u7559\u500b\u4eba\u7403\u5834\u8207 round \u7d00\u9304\u3002");
+  setText("#loginButton", "\u767b\u5165");
+  setAttr("#backButton", "aria-label", "\u8fd4\u56de\u4e0a\u4e00\u9801");
+  setAttr("#menuButton", "aria-label", "\u958b\u555f\u9078\u55ae");
+  setText(".section-kicker", "\u4f7f\u7528\u8005");
+  setAttr("#closeMenuButton", "aria-label", "\u95dc\u9589\u9078\u55ae");
+  setText("#closeMenuButton", "\u00d7");
+  setAttr("#appTabs", "aria-label", "\u4e3b\u9078\u55ae");
+  setText("#logoutButton", "\u767b\u51fa");
+  setText("#coursePage h2", "\u9078\u64c7\u7403\u5834");
+  setAttr("#teeSwitch", "aria-label", "\u9078\u64c7\u767c\u7403\u53f0");
+  setText("#courseDetailsButton", "\u8a73\u7d30\u8cc7\u6599");
+  setText("#confirmCourseButton", "\u78ba\u8a8d\u9078\u64c7");
+  setText("[data-page='front']", "\u524d 9");
+  setText("[data-page='back']", "\u5f8c 9");
+  setText("#toggleGreenDepthButton .settings-glyph", "\u2699");
+  setAttr("#toggleGreenDepthButton", "aria-label", "\u8a2d\u5b9a\u679c\u5dba\u6df1\u5ea6");
+  setText("label[for='greenDepthInput']", "\u679c\u5dba\u6df1\u5ea6\uff08\u78bc\uff09");
+  setAttr("#greenDepthInput", "placeholder", "20");
+  setAttr("#shotDistanceInput", "placeholder", "\u4f8b\u5982\uff1a170");
+  setText("#confirmShotButton", "\u78ba\u5b9a\u9019\u4e00\u687f");
+  setText(".shot-record-card h2", "\u9010\u687f\u7d00\u9304");
+  setText("#resetHoleButton", "\u6e05\u9664\u6b64\u6d1e");
+  setAttr("#toggleShotListButton", "aria-label", "\u5c55\u958b\u9010\u687f\u7d00\u9304");
+  setText("#toggleShotListButton .toggle-arrow", "\u25be");
+  setText("#emptyShotNote", "\u9084\u6c92\u6709\u63ee\u687f\u8cc7\u6599\u3002");
+  setText("#saveHoleRecordButton", "\u5132\u5b58\u6b64\u6d1e\u7d00\u9304");
+  setText("#goSummaryButton", "\u524d\u5f80\u7e3d\u8868");
+  setText("#saveRoundButton", "\u5132\u5b58\u672c\u6b21 Round");
+  setText(".round-save-panel h2", "\u5132\u5b58\u672c\u6b21 Round");
+  setText("[data-round-save-mode='front']", "\u524d 9");
+  setText("[data-round-save-mode='back']", "\u5f8c 9");
+  setText("[data-round-save-mode='full']", "18 \u6d1e");
+  setText(".round-save-grid .stat-card span", "\u5b8c\u6210\u72c0\u614b");
+  setText(".overview-total span", "\u7e3d\u63ee\u687f");
+  setText("#historyPage h2", "\u6b77\u53f2\u7d00\u9304");
+  setAttr("#toggleRoundHistoryButton", "aria-label", "\u5c55\u958b\u6b77\u53f2\u7d00\u9304");
+  setText("#toggleRoundHistoryButton .toggle-arrow", "\u25be");
+  setText("#recentRoundsEmpty", "\u9084\u6c92\u6709 round \u6b77\u53f2\u7d00\u9304\u3002");
 }
 
 function normalizeUsername(username) {
@@ -173,39 +284,105 @@ function getUserStorageKey(username) {
   return `golf-user-${normalizeUsername(username)}`;
 }
 
+function makeHoleState(baseHole) {
+  return {
+    hole: baseHole.hole,
+    par: baseHole.par,
+    distance: baseHole.distance,
+    greenDepth: 20,
+    shotDistances: [],
+    lastEstimate: null,
+    savedRecord: null
+  };
+}
+
+function cloneHoleState(hole) {
+  return {
+    hole: hole.hole,
+    par: hole.par,
+    distance: hole.distance,
+    greenDepth: hole.greenDepth,
+    shotDistances: [...hole.shotDistances],
+    lastEstimate: hole.lastEstimate ? { ...hole.lastEstimate } : null,
+    savedRecord: hole.savedRecord ? { ...hole.savedRecord } : null
+  };
+}
+
+function createEmptyCourseMap() {
+  return Object.fromEntries(
+    COURSES.flatMap((course) =>
+      course.tees.map((tee) => [
+        `${course.id}::${tee.id}`,
+        tee.holes.map(makeHoleState)
+      ])
+    )
+  );
+}
+
 function getCourseDefinition(courseId = state.profile.selectedCourseId) {
   return COURSES.find((course) => course.id === courseId) || COURSES[0];
+}
+
+function getTeeDefinition(courseId = state.profile.selectedCourseId, teeId = state.profile.selectedTeeId) {
+  const course = getCourseDefinition(courseId);
+  return course.tees.find((tee) => tee.id === teeId) || course.tees[0];
 }
 
 function currentCourseId() {
   return state.profile.selectedCourseId || DEFAULT_COURSE_ID;
 }
 
+function currentTeeId() {
+  return state.profile.selectedTeeId || DEFAULT_TEE_ID;
+}
+
 function currentCourseName() {
   return getCourseDefinition().name;
 }
 
+function currentTeeName() {
+  return getTeeDefinition().name;
+}
+
+function currentCourseKey(courseId = currentCourseId(), teeId = currentTeeId()) {
+  return `${courseId}::${teeId}`;
+}
+
 function currentCourseHoles() {
-  if (!state.courses[currentCourseId()]) {
-    state.courses[currentCourseId()] = createEmptyCourseState(getCourseDefinition());
+  const key = currentCourseKey();
+  if (!state.courses[key]) {
+    state.courses[key] = getTeeDefinition().holes.map(makeHoleState);
   }
-  return state.courses[currentCourseId()];
+  return state.courses[key];
 }
 
 function currentHole() {
   return currentCourseHoles()[state.selectedHoleIndex];
 }
 
+function validateUsername(username) {
+  if (!normalizeUsername(username)) {
+    return "\u8acb\u8f38\u5165\u5e33\u865f\u540d\u7a31\u3002";
+  }
+  return "";
+}
+
+function sanitizeNumber(value) {
+  if (value === "" || value === null || value === undefined) {
+    return "";
+  }
+  const numeric = Number(value);
+  return Number.isFinite(numeric) ? numeric : "";
+}
+
 function getRoundSaveConfig() {
   if (state.roundSaveMode === "front") {
-    return { mode: "front", label: "前 9", start: 0, end: 9, targetCount: 9 };
+    return { mode: "front", label: "\u524d 9", start: 0, end: 9, targetCount: 9 };
   }
-
   if (state.roundSaveMode === "back") {
-    return { mode: "back", label: "後 9", start: 9, end: 18, targetCount: 9 };
+    return { mode: "back", label: "\u5f8c 9", start: 9, end: 18, targetCount: 9 };
   }
-
-  return { mode: "full", label: "18 洞", start: 0, end: 18, targetCount: 18 };
+  return { mode: "full", label: "18 \u6d1e", start: 0, end: 18, targetCount: 18 };
 }
 
 function getRoundSaveHoles() {
@@ -213,34 +390,44 @@ function getRoundSaveHoles() {
   return currentCourseHoles().slice(start, end);
 }
 
-function getCurrentUserRounds() {
-  return Array.isArray(state.rounds) ? state.rounds : [];
+function getSavedHoleCountForHoles(holes) {
+  return holes.filter((hole) => hole.savedRecord).length;
 }
 
 function getTotalShotsForHoles(holes) {
   return holes.reduce((sum, hole) => sum + (hole.savedRecord ? hole.savedRecord.shots : 0), 0);
 }
 
-function getSavedHoleCountForHoles(holes) {
-  return holes.filter((hole) => hole.savedRecord).length;
+function getRoundTotalPar(holes) {
+  return holes.reduce((sum, hole) => sum + hole.par, 0);
 }
 
 function canSaveRoundHistory() {
   const holes = getRoundSaveHoles();
-  const { targetCount } = getRoundSaveConfig();
-  return holes.length === targetCount && getSavedHoleCountForHoles(holes) === targetCount;
+  const config = getRoundSaveConfig();
+  return holes.length === config.targetCount && getSavedHoleCountForHoles(holes) === config.targetCount;
+}
+
+function getCurrentUserRounds() {
+  return Array.isArray(state.rounds) ? state.rounds : [];
+}
+
+function getRoundHistoryById(roundId) {
+  return getCurrentUserRounds().find((round) => round.id === roundId) || null;
+}
+
+function createRoundId() {
+  return `round-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 }
 
 function formatRoundDate(dateText) {
   if (!dateText) {
     return "-";
   }
-
   const parsed = new Date(dateText);
   if (Number.isNaN(parsed.getTime())) {
     return dateText;
   }
-
   return new Intl.DateTimeFormat("zh-TW", {
     year: "numeric",
     month: "2-digit",
@@ -250,110 +437,23 @@ function formatRoundDate(dateText) {
   }).format(parsed);
 }
 
-function createRoundId() {
-  return `round-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-}
-
-function cloneRoundHoles(holes) {
-  return holes.map((hole) => ({
-    hole: hole.hole,
-    par: hole.par,
-    distance: hole.distance,
-    greenDepth: hole.greenDepth,
-    shotDistances: [...hole.shotDistances],
-    savedRecord: hole.savedRecord ? { ...hole.savedRecord } : null,
-    lastEstimate: hole.lastEstimate ? { ...hole.lastEstimate } : null
-  }));
-}
-
 function formatShotDistances(shotDistances) {
-  if (!Array.isArray(shotDistances) || shotDistances.length === 0) {
-    return "-";
-  }
-
-  return shotDistances.join(" / ");
+  return shotDistances.length ? shotDistances.join(" / ") : "-";
 }
 
 function formatRoundRangeText(round) {
   if (round.roundMode === "front") {
-    return "前9，完成1~9";
+    return "\u524d 9\uff0c\u5b8c\u6210 1~9";
   }
-
   if (round.roundMode === "back") {
-    return "後9，完成10~18";
+    return "\u5f8c 9\uff0c\u5b8c\u6210 10~18";
   }
-
-  return "18洞，完成1~18";
-}
-
-function getRoundTotalPar(round) {
-  return Array.isArray(round?.holes)
-    ? round.holes.reduce((sum, hole) => sum + (Number(hole.par) || 0), 0)
-    : 0;
+  return "18 \u6d1e\uff0c\u5b8c\u6210 1~18";
 }
 
 function formatRoundShotsWithPar(round) {
-  const totalPar = getRoundTotalPar(round);
-  return totalPar ? `${round.totalShots} / ${totalPar}` : String(round.totalShots);
-}
-
-function getRoundHistoryById(roundId) {
-  return getCurrentUserRounds().find((round) => round.id === roundId) || null;
-}
-
-function saveCurrentRoundHistory() {
-  const config = getRoundSaveConfig();
-  if (!canSaveRoundHistory()) {
-    return {
-      ok: false,
-      message: `必須完成${config.label}後，才能儲存本次 round。`
-    };
-  }
-
-  const holes = getRoundSaveHoles();
-  const round = {
-    id: createRoundId(),
-    date: new Date().toISOString(),
-    courseId: currentCourseId(),
-    courseName: currentCourseName(),
-    teeName: "White tee",
-    roundMode: config.mode,
-    roundLabel: config.label,
-    holeTargetCount: config.targetCount,
-    totalShots: getTotalShotsForHoles(holes),
-    savedHoleCount: getSavedHoleCountForHoles(holes),
-    holes: cloneRoundHoles(holes),
-    createdAt: new Date().toISOString(),
-    notes: ""
-  };
-
-  state.rounds = [round, ...getCurrentUserRounds()].slice(0, 50);
-  state.selectedRoundId = "";
-  saveCurrentUserData();
-  return { ok: true, round };
-}
-
-function resetCurrentCourseProgress() {
-  const course = getCourseDefinition();
-  const holes = currentCourseHoles();
-  const config = getRoundSaveConfig();
-
-  for (let index = config.start; index < config.end; index += 1) {
-    holes[index] = makeDefaultHoleConfig(course.holes[index]);
-  }
-
-  state.page = config.mode === "back" ? "back" : "front";
-  state.selectedHoleIndex = config.start;
-  state.isShotListExpanded = false;
-}
-
-function deleteRoundHistory(roundId) {
-  const nextRounds = getCurrentUserRounds().filter((round) => round.id !== roundId);
-  state.rounds = nextRounds;
-  if (state.selectedRoundId === roundId) {
-    state.selectedRoundId = nextRounds[0]?.id || "";
-  }
-  saveCurrentUserData();
+  const totalPar = round.holes.reduce((sum, hole) => sum + hole.par, 0);
+  return `${round.totalShots} / ${totalPar}`;
 }
 
 function showMessage(target, text, className) {
@@ -367,79 +467,44 @@ function hideMessage(target) {
   target.classList.add("hidden");
 }
 
-function setFieldError(element, text = "") {
-  if (!element) {
-    return;
-  }
-
+function setFieldError(target, text = "") {
   if (!text) {
-    element.textContent = "";
-    element.classList.add("hidden");
+    target.textContent = "";
+    target.classList.add("hidden");
     return;
   }
-
-  element.textContent = text;
-  element.classList.remove("hidden");
+  target.textContent = text;
+  target.classList.remove("hidden");
 }
 
-function isLoggedIn() {
-  return state.profile.username.length > 0;
-}
-
-function getStorageItem(key) {
+function readStorage(key, fallback) {
   try {
-    return localStorage.getItem(key);
+    const raw = localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : fallback;
   } catch (error) {
-    return null;
+    return fallback;
   }
 }
 
-function setStorageItem(key, value) {
+function writeStorage(key, value) {
   try {
-    localStorage.setItem(key, value);
-    return true;
+    localStorage.setItem(key, JSON.stringify(value));
   } catch (error) {
-    return false;
+    // Ignore localStorage write failures.
   }
 }
 
-function removeStorageItem(key) {
+function removeStorage(key) {
   try {
     localStorage.removeItem(key);
-    return true;
   } catch (error) {
-    return false;
-  }
-}
-
-function readJsonStorage(key, fallback) {
-  const raw = getStorageItem(key);
-  if (!raw) {
-    return fallback;
-  }
-
-  try {
-    return JSON.parse(raw);
-  } catch (error) {
-    return fallback;
-  }
-}
-
-function writeJsonStorage(key, value) {
-  try {
-    return setStorageItem(key, JSON.stringify(value));
-  } catch (error) {
-    return false;
+    // Ignore localStorage removal failures.
   }
 }
 
 function getUserIndex() {
-  const list = readJsonStorage(USER_INDEX_KEY, []);
+  const list = readStorage(USER_INDEX_KEY, []);
   return Array.isArray(list) ? list : [];
-}
-
-function saveUserIndex(usernames) {
-  writeJsonStorage(USER_INDEX_KEY, usernames);
 }
 
 function ensureUserInIndex(username) {
@@ -448,181 +513,116 @@ function ensureUserInIndex(username) {
   if (!list.includes(normalized)) {
     list.push(normalized);
     list.sort((a, b) => a.localeCompare(b, "zh-Hant"));
-    saveUserIndex(list);
+    writeStorage(USER_INDEX_KEY, list);
   }
-}
-
-function hydrateCourseHoles(courseId, storedHoles) {
-  const course = getCourseDefinition(courseId);
-  return course.holes.map((baseHole, index) => {
-    const savedHole = storedHoles?.[index] || {};
-    return {
-      ...makeDefaultHoleConfig(baseHole),
-      greenDepth: resolveGreenDepth(savedHole),
-      shotDistances: Array.isArray(savedHole.shotDistances)
-        ? savedHole.shotDistances.map((item) => sanitizeNumber(item)).filter((item) => item !== "")
-        : [],
-      lastEstimate: savedHole.lastEstimate || null,
-      savedRecord: savedHole.savedRecord || null
-    };
-  });
 }
 
 function createEmptyUserData(username) {
   return {
     username,
     selectedCourseId: DEFAULT_COURSE_ID,
-    courses: createDefaultCourseMap(),
-    rounds: [],
-    updatedAt: new Date().toISOString()
+    selectedTeeId: DEFAULT_TEE_ID,
+    courses: createEmptyCourseMap(),
+    rounds: []
   };
 }
 
-function migrateLegacyDataToUser(username) {
-  const legacy = readJsonStorage(LEGACY_STORAGE_KEY, null);
-  if (!legacy || legacy?.profile?.username !== username) {
-    return null;
+function hydrateHoleState(baseHole, savedHole) {
+  const hole = makeHoleState(baseHole);
+  if (!savedHole) {
+    return hole;
   }
-
-  const legacyCourse = getCourseDefinition(DEFAULT_COURSE_ID);
-  const legacyHoles = legacyCourse.holes.map((baseHole, index) => {
-    const savedHole = legacy?.holes?.[index] || {};
-    let shotDistances = Array.isArray(savedHole.shotDistances) ? savedHole.shotDistances : [];
-
-    if (shotDistances.length === 0) {
-      const oldRemainders = Array.isArray(savedHole.shotRemainders)
-        ? savedHole.shotRemainders.map((item) => sanitizeNumber(item)).filter((item) => item !== "")
-        : [];
-      const oldTeeShot = sanitizeNumber(savedHole.teeShotDistance);
-      let previousRemainder = baseHole.distance;
-
-      if (oldTeeShot !== "") {
-        shotDistances.push(oldTeeShot);
-        previousRemainder = Math.max(baseHole.distance - oldTeeShot, 0);
-      }
-
-      oldRemainders.forEach((remainder) => {
-        const shotDistance = Math.max(previousRemainder - remainder, 0);
-        if (shotDistance > 0) {
-          shotDistances.push(shotDistance);
-        }
-        previousRemainder = remainder;
-      });
-    }
-
-    return {
-      ...makeDefaultHoleConfig(baseHole),
-      greenDepth: resolveGreenDepth(savedHole),
-      shotDistances: shotDistances.map((item) => sanitizeNumber(item)).filter((item) => item !== ""),
-      lastEstimate: savedHole.lastEstimate || null,
-      savedRecord: savedHole.savedRecord || null
-    };
-  });
-
-  return {
-    username,
-    selectedCourseId: DEFAULT_COURSE_ID,
-    courses: {
-      ...createDefaultCourseMap(),
-      [DEFAULT_COURSE_ID]: legacyHoles
-    },
-    rounds: [],
-    updatedAt: new Date().toISOString()
-  };
+  hole.greenDepth = Number(savedHole.greenDepth) > 0 ? Number(savedHole.greenDepth) : 20;
+  hole.shotDistances = Array.isArray(savedHole.shotDistances)
+    ? savedHole.shotDistances.map(Number).filter((value) => Number.isFinite(value) && value > 0)
+    : [];
+  hole.lastEstimate = savedHole.lastEstimate || null;
+  hole.savedRecord = savedHole.savedRecord || null;
+  return hole;
 }
 
 function loadUserData(username) {
   const normalized = normalizeUsername(username);
-  const stored = readJsonStorage(getUserStorageKey(normalized), null);
-  if (stored) {
-    const hasCourseMap = stored.courses && typeof stored.courses === "object";
-    const selectedCourseId = COURSES.some((course) => course.id === stored.selectedCourseId)
-      ? stored.selectedCourseId
-      : DEFAULT_COURSE_ID;
-    const courses = Object.fromEntries(
-      COURSES.map((course) => {
-        const sourceHoles = hasCourseMap ? stored.courses?.[course.id] : course.id === DEFAULT_COURSE_ID ? stored.holes : null;
-        return [course.id, hydrateCourseHoles(course.id, sourceHoles)];
-      })
-    );
-
-    return {
-      username: normalized,
-      selectedCourseId,
-      courses,
-      rounds: Array.isArray(stored.rounds) ? stored.rounds : [],
-      updatedAt: stored.updatedAt || ""
-    };
+  const stored = readStorage(getUserStorageKey(normalized), null);
+  if (!stored) {
+    return createEmptyUserData(normalized);
   }
 
-  const migrated = migrateLegacyDataToUser(normalized);
-  return migrated || createEmptyUserData(normalized);
+  const data = createEmptyUserData(normalized);
+  data.selectedCourseId = stored.selectedCourseId || DEFAULT_COURSE_ID;
+  data.selectedTeeId = stored.selectedTeeId || DEFAULT_TEE_ID;
+  data.rounds = Array.isArray(stored.rounds) ? stored.rounds : [];
+
+  if (stored.courses && typeof stored.courses === "object") {
+    COURSES.forEach((course) => {
+      course.tees.forEach((tee) => {
+        const key = `${course.id}::${tee.id}`;
+        const savedHoles = stored.courses[key];
+        if (Array.isArray(savedHoles)) {
+          data.courses[key] = tee.holes.map((hole, index) => hydrateHoleState(hole, savedHoles[index]));
+        }
+      });
+    });
+  }
+
+  return data;
 }
 
 function saveCurrentUserData() {
-  if (!isLoggedIn()) {
+  if (!state.profile.username) {
     return;
   }
-
   ensureUserInIndex(state.profile.username);
-  setStorageItem(CURRENT_USER_KEY, state.profile.username);
-  writeJsonStorage(getUserStorageKey(state.profile.username), {
+  localStorage.setItem(CURRENT_USER_KEY, state.profile.username);
+  writeStorage(getUserStorageKey(state.profile.username), {
     username: state.profile.username,
-    selectedCourseId: currentCourseId(),
+    selectedCourseId: state.profile.selectedCourseId,
+    selectedTeeId: state.profile.selectedTeeId,
     courses: state.courses,
-    rounds: getCurrentUserRounds(),
-    updatedAt: new Date().toISOString()
+    rounds: state.rounds
   });
 }
 
 function applyUserData(userData) {
   state.profile.username = userData.username;
-  state.profile.selectedCourseId = userData.selectedCourseId || DEFAULT_COURSE_ID;
-  state.pendingCourseId = state.profile.selectedCourseId || DEFAULT_COURSE_ID;
+  state.profile.selectedCourseId = userData.selectedCourseId;
+  state.profile.selectedTeeId = userData.selectedTeeId;
+  state.pendingCourseId = userData.selectedCourseId;
+  state.pendingTeeId = userData.selectedTeeId;
+  state.courses = userData.courses;
+  state.rounds = userData.rounds;
   state.page = "front";
   state.selectedHoleIndex = 0;
-  state.courses = userData.courses || createDefaultCourseMap();
   state.selectedRoundId = "";
   state.isRoundHistoryExpanded = false;
-  state.rounds = Array.isArray(userData.rounds) ? userData.rounds : [];
+  state.isShotListExpanded = false;
+  state.saveHoleNextHint = "";
 }
 
 function loadSession() {
-  const currentUsername = normalizeUsername(getStorageItem(CURRENT_USER_KEY) || "");
-  if (!currentUsername) {
-    state.profile.username = "";
-    state.profile.selectedCourseId = DEFAULT_COURSE_ID;
-    state.pendingCourseId = DEFAULT_COURSE_ID;
-    state.courses = createDefaultCourseMap();
-    state.rounds = [];
-    state.selectedRoundId = "";
-    state.isRoundHistoryExpanded = false;
+  let username = "";
+  try {
+    username = localStorage.getItem(CURRENT_USER_KEY) || "";
+  } catch (error) {
+    username = "";
+  }
+  if (!username) {
     return;
   }
-
-  ensureUserInIndex(currentUsername);
-  applyUserData(loadUserData(currentUsername));
+  applyUserData(loadUserData(username));
 }
 
-function appPageDefinitions() {
-  return Array.isArray(window.GOLF_APP_PAGES) && window.GOLF_APP_PAGES.length > 0
-    ? window.GOLF_APP_PAGES
-    : [
-        { id: "course", label: "球場", panelId: "coursePage" },
-        { id: "play", label: "球洞", panelId: "playPage" },
-        { id: "summary", label: "總表", panelId: "summaryPage" },
-        { id: "history", label: "歷史", panelId: "historyPage" }
-      ];
+function isLoggedIn() {
+  return Boolean(state.profile.username);
 }
 
 function currentAppPageDefinition() {
-  return appPageDefinitions().find((page) => page.id === state.activeAppPage) || appPageDefinitions()[0];
+  return APP_PAGES.find((page) => page.id === state.activeAppPage) || APP_PAGES[0];
 }
 
 function previousAppPageId() {
-  const pages = appPageDefinitions();
-  const currentIndex = pages.findIndex((page) => page.id === state.activeAppPage);
-  return currentIndex > 0 ? pages[currentIndex - 1].id : "";
+  const index = APP_PAGES.findIndex((page) => page.id === state.activeAppPage);
+  return index > 0 ? APP_PAGES[index - 1].id : "";
 }
 
 function scrollAppToTop() {
@@ -632,158 +632,84 @@ function scrollAppToTop() {
 }
 
 function setActiveAppPage(pageId) {
-  const pages = appPageDefinitions();
-  state.activeAppPage = pages.some((page) => page.id === pageId) ? pageId : pages[0].id;
+  state.activeAppPage = APP_PAGES.some((page) => page.id === pageId) ? pageId : "course";
   if (state.activeAppPage === "course") {
-    state.pendingCourseId = state.profile.selectedCourseId || DEFAULT_COURSE_ID;
+    state.pendingCourseId = state.profile.selectedCourseId;
+    state.pendingTeeId = state.profile.selectedTeeId;
     state.isCourseDetailsOpen = false;
   }
   state.isMenuOpen = false;
-  renderCurrentPageTitle();
-  renderAppTabs();
-  renderAppPageVisibility();
-  renderMenuState();
+  renderAll();
   scrollAppToTop();
 }
 
-function validateUsername(username) {
-  if (!normalizeUsername(username)) {
-    return "請輸入帳號名稱。";
+function validateShotInput() {
+  const value = sanitizeNumber(elements.shotDistanceInput.value);
+  if (!Number.isFinite(value) || value <= 0) {
+    return "\u8acb\u8f38\u5165\u5927\u65bc 0 \u7684\u64ca\u7403\u8ddd\u96e2\u3002";
   }
-
+  if (value > 500) {
+    return "\u55ae\u687f\u64ca\u7403\u8ddd\u96e2\u4e0d\u80fd\u8d85\u904e 500 \u78bc\u3002";
+  }
   return "";
 }
 
-function validateHole(hole) {
-  if (!Number.isFinite(hole.greenDepth) || hole.greenDepth <= 0) {
-    return "請先輸入有效的果嶺深度。";
-  }
-
-  for (let index = 0; index < hole.shotDistances.length; index += 1) {
-    const shotDistance = hole.shotDistances[index];
-    if (!Number.isFinite(shotDistance) || shotDistance <= 0) {
-      return `第 ${index + 1} 桿的擊球距離必須大於 0。`;
-    }
-
-    if (shotDistance > 500) {
-      return `第 ${index + 1} 桿的擊球距離不能超過 500 碼。`;
-    }
-  }
-
-  return "";
-}
-
-function getTrajectory(hole) {
-  let x = hole.distance;
+function calculateTrajectory(hole) {
+  let relativeToCup = hole.distance;
   let previousZone = "front";
   const greenRadius = hole.greenDepth / 2;
 
   return hole.shotDistances.map((shotDistance, index) => {
-    const shotNumber = index + 1;
+    relativeToCup = relativeToCup >= 0 ? relativeToCup - shotDistance : relativeToCup + shotDistance;
+
+    let zone = "front";
     let outcome = "";
     let completed = false;
-    let distanceToGreen = null;
 
-    if (x >= 0) {
-      x -= shotDistance;
-    } else {
-      x += shotDistance;
-    }
-
-    let currentZone = "";
-    if (x > greenRadius) {
-      currentZone = "front";
-      distanceToGreen = x - greenRadius;
-      if (previousZone === "back" || previousZone === "green") {
-        outcome = `打回果嶺前，距離果嶺 ${distanceToGreen} 碼`;
-      } else {
-        outcome = `距離果嶺 ${distanceToGreen} 碼`;
-      }
-    } else if (Math.abs(x) <= greenRadius) {
-      currentZone = "green";
+    if (relativeToCup > greenRadius) {
+      zone = "front";
+      const distanceToGreen = relativeToCup - greenRadius;
+      outcome = previousZone === "back" || previousZone === "green"
+        ? `\u56de\u5230\u679c\u5dba\u524d\uff0c\u8ddd\u96e2\u679c\u5dba ${distanceToGreen} \u78bc`
+        : `\u8ddd\u96e2\u679c\u5dba ${distanceToGreen} \u78bc`;
+    } else if (Math.abs(relativeToCup) <= greenRadius) {
+      zone = "green";
       completed = true;
-      distanceToGreen = 0;
-      const distanceToHole = Math.abs(x);
-      if (previousZone === "back") {
-        outcome = `回到果嶺，距離球洞 ${distanceToHole} 碼`;
-      } else {
-        outcome = `進入果嶺，距離球洞 ${distanceToHole} 碼`;
-      }
+      const distanceToHole = Math.abs(relativeToCup);
+      outcome = previousZone === "back"
+        ? `\u56de\u5230\u679c\u5dba\uff0c\u8ddd\u96e2\u7403\u6d1e ${distanceToHole} \u78bc`
+        : `\u9032\u5165\u679c\u5dba\uff0c\u8ddd\u96e2\u7403\u6d1e ${distanceToHole} \u78bc`;
     } else {
-      currentZone = "back";
-      const overshoot = Math.max(Math.abs(x) - greenRadius, 0);
-      if (previousZone === "back") {
-        outcome = `仍超出果嶺 ${overshoot} 碼`;
-      } else {
-        outcome = `超出果嶺 ${overshoot} 碼`;
-      }
+      zone = "back";
+      const distanceToHole = Math.max(Math.abs(relativeToCup) - greenRadius, 0);
+      outcome = previousZone === "back"
+        ? `\u4ecd\u8d85\u51fa\u679c\u5dba ${distanceToHole} \u78bc`
+        : `\u8d85\u51fa\u679c\u5dba ${distanceToHole} \u78bc`;
     }
 
-    previousZone = currentZone;
+    previousZone = zone;
 
     return {
-      shotNumber,
+      shotNumber: index + 1,
       shotDistance,
-      zone: currentZone,
-      value: currentZone === "back" ? Math.max(Math.abs(x) - greenRadius, 0) : Math.abs(x),
-      distanceToGreen,
       completed,
       outcome
     };
   });
 }
 
-function calculateEstimate(hole) {
-  if (hole.shotDistances.length === 0) {
-    return {
-      estimatedShotsToGreen: null,
-      detail: "至少輸入一桿擊球距離，才能開始記錄。"
-    };
-  }
-
-  const trajectory = getTrajectory(hole);
-  const lastStep = trajectory[trajectory.length - 1];
-
-  if (lastStep.completed) {
-    return {
-      estimatedShotsToGreen: lastStep.shotNumber,
-      detail: `第 ${lastStep.shotNumber} 桿後，${lastStep.outcome}。`
-    };
-  }
-
-  return {
-    estimatedShotsToGreen: null,
-    detail: lastStep.zone === "back"
-      ? `目前超出果嶺 ${lastStep.value} 碼，請繼續輸入下一桿。`
-      : `目前距離果嶺 ${lastStep.distanceToGreen ?? 0} 碼，尚未進入果嶺。`
-  };
-}
-
-function syncGreenDepthToState() {
-  currentHole().greenDepth = sanitizeNumber(elements.greenDepthInput.value);
-}
-
 function refreshEstimate() {
-  syncGreenDepthToState();
   const hole = currentHole();
-  const errorMessage = validateHole(hole);
+  const greenDepth = sanitizeNumber(elements.greenDepthInput.value);
+  hole.greenDepth = Number.isFinite(greenDepth) && greenDepth > 0 ? greenDepth : 20;
+  const trajectory = calculateTrajectory(hole);
+  const lastStep = trajectory[trajectory.length - 1] || null;
+  hole.lastEstimate = lastStep
+    ? { estimatedShotsToGreen: lastStep.completed ? lastStep.shotNumber : null }
+    : null;
 
-  if (errorMessage) {
-    hole.lastEstimate = null;
-    renderShotList();
-    renderHoleList();
-    renderOverview();
-    renderRoundSavePanel();
-    renderSaveHoleBar();
-    saveCurrentUserData();
-    return;
-  }
-
-  const estimate = calculateEstimate(hole);
-  hole.lastEstimate = estimate.estimatedShotsToGreen ? estimate : null;
-  renderShotList();
   renderHoleList();
-  renderSaveHoleBar();
+  renderHoleEditor();
   renderOverview();
   renderRoundSavePanel();
   saveCurrentUserData();
@@ -797,15 +723,13 @@ function renderAppVisibility() {
 
 function renderCurrentPageTitle() {
   elements.currentPageTitle.textContent = currentAppPageDefinition().label;
-  const previousPageId = previousAppPageId();
-  const shouldShowBackButton = Boolean(previousPageId);
-  elements.backButton.disabled = !shouldShowBackButton;
-  elements.backButton.classList.toggle("hidden", !shouldShowBackButton);
+  const previousId = previousAppPageId();
+  elements.backButton.classList.toggle("hidden", !previousId || state.activeAppPage === "course");
+  elements.backButton.disabled = !previousId || state.activeAppPage === "course";
 }
 
 function renderAppTabs() {
-  const pages = appPageDefinitions();
-  elements.appTabs.innerHTML = pages.map((page) => `
+  elements.appTabs.innerHTML = APP_PAGES.map((page) => `
     <button class="app-tab ${page.id === state.activeAppPage ? "active" : ""}" type="button" data-app-page="${page.id}">
       ${page.label}
     </button>
@@ -813,22 +737,17 @@ function renderAppTabs() {
 }
 
 function renderAppPageVisibility() {
-  const pages = appPageDefinitions();
   elements.appPages.forEach((pageElement) => {
-    const definition = pages.find((page) => page.panelId === pageElement.id);
+    const definition = APP_PAGES.find((page) => page.panelId === pageElement.id);
     pageElement.classList.toggle("hidden", !definition || definition.id !== state.activeAppPage);
-  });
-
-  Array.from(document.querySelectorAll("[data-app-page]")).forEach((tab) => {
-    tab.classList.toggle("active", tab.dataset.appPage === state.activeAppPage);
   });
 }
 
 function renderMenuState() {
   elements.menuOverlay.classList.toggle("hidden", !state.isMenuOpen);
   elements.menuDrawer.classList.toggle("hidden", !state.isMenuOpen);
-  elements.menuDrawer.setAttribute("aria-hidden", String(!state.isMenuOpen));
   elements.menuButton.setAttribute("aria-expanded", String(state.isMenuOpen));
+  elements.menuDrawer.setAttribute("aria-hidden", String(!state.isMenuOpen));
 }
 
 function renderProfile() {
@@ -839,29 +758,25 @@ function renderCourseSelect() {
   elements.courseSelect.innerHTML = COURSES.map((course) => `
     <option value="${course.id}">${course.name}</option>
   `).join("");
-  elements.courseSelect.value = state.pendingCourseId || DEFAULT_COURSE_ID;
-  elements.confirmCourseButton.disabled = false;
-  elements.courseDetailsButton.disabled = false;
+  elements.courseSelect.value = state.pendingCourseId;
+  elements.teeTabs.forEach((button) => {
+    button.classList.toggle("active", button.dataset.tee === state.pendingTeeId);
+  });
 }
 
 function renderCourseDetails() {
-  if (!state.pendingCourseId) {
-    elements.courseDetailsButton.setAttribute("aria-expanded", "false");
-    elements.courseDetailsPanel.classList.add("hidden");
-    elements.courseDetailsList.innerHTML = "";
-    return;
-  }
-
-  const course = getCourseDefinition(state.pendingCourseId);
+  const tee = getTeeDefinition(state.pendingCourseId, state.pendingTeeId);
   elements.courseDetailsButton.setAttribute("aria-expanded", String(state.isCourseDetailsOpen));
   elements.courseDetailsPanel.classList.toggle("hidden", !state.isCourseDetailsOpen);
-  elements.courseDetailsList.innerHTML = course.holes.map((hole) => `
-    <div class="course-detail-item">
-      <strong>第 ${hole.hole} 洞</strong>
-      <span>Par ${hole.par}</span>
-      <span>${hole.distance} 碼</span>
-    </div>
-  `).join("");
+  elements.courseDetailsList.innerHTML = state.isCourseDetailsOpen
+    ? tee.holes.map((hole) => `
+        <div class="course-detail-item">
+          <strong>\u7b2c ${hole.hole} \u6d1e</strong>
+          <span>Par ${hole.par}</span>
+          <span>${hole.distance} \u78bc</span>
+        </div>
+      `).join("")
+    : "";
 }
 
 function renderHoleTabs() {
@@ -871,13 +786,14 @@ function renderHoleTabs() {
 }
 
 function renderHoleList() {
-  const holes = currentCourseHoles();
   const start = state.page === "front" ? 0 : 9;
-  const pageHoles = holes.slice(start, start + 9);
-  elements.holeList.innerHTML = pageHoles.map((hole, index) => {
+  const holes = currentCourseHoles().slice(start, start + 9);
+  elements.holeList.innerHTML = holes.map((hole, index) => {
     const actualIndex = start + index;
+    const activeClass = actualIndex === state.selectedHoleIndex ? "active" : "";
+    const savedClass = hole.savedRecord ? "saved" : "";
     return `
-      <button class="hole-chip ${hole.savedRecord ? "saved" : ""} ${actualIndex === state.selectedHoleIndex ? "active" : ""}" type="button" data-index="${actualIndex}">
+      <button class="hole-chip ${activeClass} ${savedClass}" type="button" data-index="${actualIndex}">
         <strong>${hole.hole}</strong>
       </button>
     `;
@@ -886,118 +802,94 @@ function renderHoleList() {
 
 function renderShotList() {
   const hole = currentHole();
-  const trajectory = getTrajectory(hole);
-  elements.emptyShotNote.classList.toggle("hidden", hole.shotDistances.length > 0);
+  const trajectory = calculateTrajectory(hole);
+  const visibleTrajectory = !state.isShotListExpanded && trajectory.length > 1
+    ? trajectory.slice(-1)
+    : trajectory;
+
+  elements.emptyShotNote.classList.toggle("hidden", trajectory.length > 0);
+  elements.toggleShotListButton.classList.toggle("hidden", trajectory.length <= 1);
+  elements.toggleShotListButton.setAttribute("aria-expanded", String(state.isShotListExpanded));
+  elements.toggleShotListButton.querySelector(".toggle-arrow").textContent = state.isShotListExpanded ? "\u25b4" : "\u25be";
   elements.shotList.classList.toggle("is-expanded", state.isShotListExpanded);
-  elements.shotList.innerHTML = trajectory.map((step) => `
+
+  elements.shotList.innerHTML = visibleTrajectory.map((step) => `
     <div class="shot-row">
       <div class="shot-row-main">
-        <div class="shot-label">第 ${step.shotNumber} 桿</div>
+        <div class="shot-label">\u7b2c ${step.shotNumber} \u687f</div>
         <div class="shot-result-line">
-          <div class="shot-distance-value">${step.shotDistance} 碼</div>
+          <div class="shot-distance-value">${step.shotDistance} \u78bc</div>
           <div class="shot-remainder ${step.completed ? "is-success" : ""}">${step.outcome}</div>
         </div>
       </div>
-      <button class="icon-button remove-shot" type="button" data-shot-index="${step.shotNumber - 1}" aria-label="刪除這一桿">×</button>
+      ${state.isShotListExpanded ? `<button class="icon-button remove-shot" type="button" data-shot-index="${step.shotNumber - 1}" aria-label="\u522a\u9664\u9019\u4e00\u687f">\u00d7</button>` : ""}
     </div>
   `).join("");
-  renderShotListToggle(trajectory.length);
 }
 
 function renderSaveHoleBar() {
   const hole = currentHole();
-  const isCompleted = Boolean(hole.lastEstimate && hole.lastEstimate.estimatedShotsToGreen);
-  elements.saveHoleRecordButton.disabled = !isCompleted;
-  elements.saveHoleRecordButton.setAttribute("aria-disabled", String(!isCompleted));
+  const canSaveHole = Boolean(hole.lastEstimate && hole.lastEstimate.estimatedShotsToGreen);
+  const nextHint = ensureSaveHoleNextHint();
+  elements.saveHoleRecordButton.disabled = !canSaveHole;
+  elements.saveHoleRecordButton.setAttribute("aria-disabled", String(!canSaveHole));
+  nextHint.textContent = state.saveHoleNextHint;
+  nextHint.classList.toggle("hidden", !state.saveHoleNextHint);
 
-  elements.saveHoleHint.textContent = hole.savedRecord
-    ? `此洞已儲存，揮桿 ${hole.savedRecord.shots} 次。`
-    : isCompleted
-      ? "此洞已進入果嶺，可儲存本洞紀錄。"
-      : "尚未進入果嶺，完成後才能儲存此洞紀錄。";
+  if (hole.savedRecord) {
+    elements.saveHoleHint.textContent = `\u6b64\u6d1e\u5df2\u5132\u5b58\uff0c\u63ee\u687f ${hole.savedRecord.shots} \u6b21\u3002`;
+    return;
+  }
+
+  elements.saveHoleHint.textContent = canSaveHole
+    ? "\u6b64\u6d1e\u5df2\u9032\u5165\u679c\u5dba\uff0c\u53ef\u5132\u5b58\u6b64\u6d1e\u7d00\u9304\u3002"
+    : "\u5c1a\u672a\u9032\u5165\u679c\u5dba\uff0c\u5b8c\u6210\u5f8c\u624d\u80fd\u5132\u5b58\u6b64\u6d1e\u7d00\u9304\u3002";
 }
 
 function renderHoleEditor() {
   const hole = currentHole();
-  elements.editorTitle.textContent = `第 ${hole.hole} 洞`;
-  elements.holeSelectorSubtitle.textContent = `${currentCourseName()} White tee`;
-  elements.parValue.textContent = hole.par;
-  elements.distanceValue.textContent = `${hole.distance} 碼`;
-  elements.greenDepthInput.value = hole.greenDepth;
+  elements.editorTitle.textContent = `\u7b2c ${hole.hole} \u6d1e`;
+  elements.holeSelectorSubtitle.textContent = `${currentCourseName()} ${currentTeeName()}`;
+  elements.parValue.textContent = String(hole.par);
+  elements.distanceValue.textContent = `${hole.distance} \u78bc`;
+  elements.greenDepthInput.value = String(hole.greenDepth);
   elements.shotDistanceInput.value = "";
   renderShotList();
   renderSaveHoleBar();
 }
 
 function renderOverview() {
-  const holes = currentCourseHoles();
-  const { start, end, label } = getRoundSaveConfig();
-  const overviewHoles = holes.slice(start, end);
-  const totalShots = overviewHoles.reduce((sum, hole) => sum + (hole.savedRecord ? hole.savedRecord.shots : 0), 0);
-  const totalPar = overviewHoles.reduce((sum, hole) => sum + hole.par, 0);
-  elements.overviewTitle.textContent = `${label}${label.includes("洞") ? "" : " 洞"}紀錄`;
-  elements.totalShotsValue.textContent = `${totalShots} / ${totalPar}`;
-  elements.overviewList.innerHTML = overviewHoles.map((hole) => {
-    const resultText = hole.savedRecord ? hole.savedRecord.resultText : "尚無紀錄";
-    const shotsText = hole.savedRecord ? `${hole.savedRecord.shots} 桿` : "-";
-
-    return `
-      <div class="overview-row ${hole.savedRecord ? "saved" : ""}">
-        <strong>第 ${hole.hole} 洞</strong>
-        <span>Par ${hole.par}</span>
-        <span>${resultText}</span>
-        <div class="overview-shots">${shotsText}</div>
-      </div>
-    `;
-  }).join("");
+  const config = getRoundSaveConfig();
+  const holes = currentCourseHoles().slice(config.start, config.end);
+  elements.overviewTitle.textContent = `${config.label}\u7d00\u9304`;
+  elements.totalShotsValue.textContent = `${getTotalShotsForHoles(holes)} / ${getRoundTotalPar(holes)}`;
+  elements.overviewList.innerHTML = holes.map((hole) => `
+    <div class="overview-row ${hole.savedRecord ? "saved" : ""}">
+      <strong>\u7b2c ${hole.hole} \u6d1e</strong>
+      <span>Par ${hole.par}</span>
+      <span>${hole.savedRecord ? hole.savedRecord.resultText : "\u5c1a\u7121\u7d00\u9304"}</span>
+      <div class="overview-shots">${hole.savedRecord ? `${hole.savedRecord.shots} \u687f` : "-"}</div>
+    </div>
+  `).join("");
 }
 
 function renderRoundSavePanel() {
   const config = getRoundSaveConfig();
   const holes = getRoundSaveHoles();
-  const savedHoleCount = getSavedHoleCountForHoles(holes);
-  const canSave = canSaveRoundHistory();
-
+  const savedCount = getSavedHoleCountForHoles(holes);
   elements.roundSaveModeTabs.forEach((tab) => {
     tab.classList.toggle("active", tab.dataset.roundSaveMode === state.roundSaveMode);
   });
-  elements.roundSaveStatusValue.textContent = `${savedHoleCount} / ${config.targetCount}`;
-  elements.roundSaveCourseValue.textContent = `${currentCourseName()} White tee`;
-  elements.saveRoundButton.disabled = !canSave;
-  elements.saveRoundButton.setAttribute("aria-disabled", String(!canSave));
+  elements.roundSaveStatusValue.textContent = `${savedCount} / ${config.targetCount}`;
+  elements.roundSaveCourseValue.textContent = `${currentCourseName()} ${currentTeeName()}`;
+  elements.saveRoundButton.disabled = !canSaveRoundHistory();
+  elements.saveRoundButton.setAttribute("aria-disabled", String(!canSaveRoundHistory()));
 
-  if (canSave) {
-    showMessage(elements.saveRoundMessage, `${config.label}已完成，可儲存本次 round。`, "is-info");
-    return;
+  if (canSaveRoundHistory()) {
+    showMessage(elements.saveRoundMessage, `${config.label}\u5df2\u5b8c\u6210\uff0c\u53ef\u5132\u5b58\u672c\u6b21 round\u3002`, "is-info");
+  } else {
+    showMessage(elements.saveRoundMessage, `\u5c1a\u672a\u5b8c\u6210${config.label}\u7684\u6d1e\u6578\uff0c\u5b8c\u6210\u5f8c\u624d\u80fd\u5132\u5b58\u672c\u6b21 round\u3002`, "is-warn");
   }
-
-  showMessage(elements.saveRoundMessage, `尚未完成${config.label}的 savedRecord，完成後才能儲存本次 round。`, "is-warn");
-}
-
-function renderRecentRounds() {
-  const allRounds = getCurrentUserRounds().slice(0, 5);
-  const rounds = state.isRoundHistoryExpanded ? allRounds : allRounds.slice(0, 1);
-  elements.recentRoundsEmpty.classList.toggle("hidden", rounds.length > 0);
-  elements.toggleRoundHistoryButton.classList.toggle("hidden", allRounds.length <= 1);
-  elements.toggleRoundHistoryButton.setAttribute("aria-expanded", String(state.isRoundHistoryExpanded));
-  elements.recentRoundsList.innerHTML = rounds.map((round) => `
-    <div class="round-history-item ${round.id === state.selectedRoundId ? "active" : ""}">
-      <button class="round-delete-button" type="button" data-round-delete="${round.id}" aria-label="刪除這筆 round">×</button>
-      <div class="round-history-meta">
-        <strong>${formatRoundDate(round.date)}</strong>
-        <span>${round.courseName} ${round.teeName || "White tee"}</span>
-        <span>${formatRoundRangeText(round)}</span>
-        <span>總桿 ${formatRoundShotsWithPar(round)}</span>
-      </div>
-      <div class="round-history-actions">
-        <button class="btn btn-accent round-action-button" type="button" data-round-export="${round.id}">匯出 CSV</button>
-        <button class="btn btn-soft round-action-button" type="button" data-round-view="${round.id}" aria-expanded="${round.id === state.selectedRoundId ? "true" : "false"}">
-          細項 ${round.id === state.selectedRoundId ? "▴" : "▾"}
-        </button>
-      </div>
-      ${renderRoundDetail(round.id)}
-    </div>
-  `).join("");
 }
 
 function renderRoundDetail(roundId = state.selectedRoundId) {
@@ -1005,24 +897,23 @@ function renderRoundDetail(roundId = state.selectedRoundId) {
   if (!round || round.id !== state.selectedRoundId) {
     return "";
   }
-
   return `
     <div class="round-inline-detail">
       <div class="round-detail-summary">
         <div class="stat-card">
-          <span>日期</span>
+          <span>\u65e5\u671f</span>
           <strong>${formatRoundDate(round.date)}</strong>
         </div>
         <div class="stat-card">
-          <span>球場</span>
-          <strong>${round.courseName} ${round.teeName || "White tee"}</strong>
+          <span>\u7403\u5834</span>
+          <strong>${round.courseName} ${round.teeName}</strong>
         </div>
         <div class="stat-card">
-          <span>範圍</span>
-          <strong>${round.roundLabel || "18 洞"}</strong>
+          <span>\u7bc4\u570d</span>
+          <strong>${round.roundLabel}</strong>
         </div>
         <div class="stat-card">
-          <span>總桿</span>
+          <span>\u7e3d\u687f</span>
           <strong>${formatRoundShotsWithPar(round)}</strong>
         </div>
       </div>
@@ -1030,14 +921,14 @@ function renderRoundDetail(roundId = state.selectedRoundId) {
         ${round.holes.map((hole) => `
           <div class="round-detail-hole-item">
             <div class="round-detail-hole-top">
-              <strong>第 ${hole.hole} 洞</strong>
+              <strong>\u7b2c ${hole.hole} \u6d1e</strong>
               <span>Par ${hole.par}</span>
-              <span>${hole.distance} 碼</span>
+              <span>${hole.distance} \u78bc</span>
             </div>
-            <span>果嶺深度 ${hole.greenDepth} 碼</span>
-            <span>${hole.savedRecord ? `${hole.savedRecord.shots} 桿` : "-"}</span>
-            <span>${hole.savedRecord ? hole.savedRecord.resultText : "尚無紀錄"}</span>
-            <span>逐桿距離：${formatShotDistances(hole.shotDistances)}</span>
+            <span>\u679c\u5dba\u6df1\u5ea6 ${hole.greenDepth} \u78bc</span>
+            <span>${hole.savedRecord ? `${hole.savedRecord.shots} \u687f` : "-"}</span>
+            <span>${hole.savedRecord ? hole.savedRecord.resultText : "\u5c1a\u7121\u7d00\u9304"}</span>
+            <span>\u9010\u687f\u8ddd\u96e2\uff1a${formatShotDistances(hole.shotDistances)}</span>
           </div>
         `).join("")}
       </div>
@@ -1045,28 +936,47 @@ function renderRoundDetail(roundId = state.selectedRoundId) {
   `;
 }
 
+function renderRecentRounds() {
+  const allRounds = getCurrentUserRounds();
+  const rounds = state.isRoundHistoryExpanded ? allRounds : allRounds.slice(0, 1);
+  elements.recentRoundsEmpty.classList.toggle("hidden", rounds.length > 0);
+  elements.toggleRoundHistoryButton.classList.toggle("hidden", allRounds.length <= 1);
+  elements.toggleRoundHistoryButton.setAttribute("aria-expanded", String(state.isRoundHistoryExpanded));
+  elements.toggleRoundHistoryButton.querySelector(".toggle-arrow").textContent = state.isRoundHistoryExpanded ? "\u25b4" : "\u25be";
+
+  elements.recentRoundsList.innerHTML = rounds.map((round) => `
+    <div class="round-history-item ${round.id === state.selectedRoundId ? "active" : ""}">
+      <button class="round-delete-button" type="button" data-round-delete="${round.id}" aria-label="\u522a\u9664\u9019\u7b46 round">\u00d7</button>
+      <div class="round-history-meta">
+        <strong>${formatRoundDate(round.date)}</strong>
+        <span>${round.courseName} ${round.teeName}</span>
+        <span>${formatRoundRangeText(round)}</span>
+        <span>\u7e3d\u687f ${formatRoundShotsWithPar(round)}</span>
+      </div>
+      <div class="round-history-actions">
+        <button class="btn btn-accent round-action-button" type="button" data-round-export="${round.id}">\u532f\u51fa CSV</button>
+        <button class="btn btn-soft round-action-button" type="button" data-round-view="${round.id}" aria-expanded="${round.id === state.selectedRoundId ? "true" : "false"}">
+          \u7d30\u9805 ${round.id === state.selectedRoundId ? "\u25b4" : "\u25be"}
+        </button>
+      </div>
+      ${renderRoundDetail(round.id)}
+    </div>
+  `).join("");
+}
+
 function renderGreenDepthPanel() {
   elements.greenDepthPanel.classList.toggle("hidden", !state.isGreenDepthOpen);
   elements.toggleGreenDepthButton.setAttribute("aria-expanded", String(state.isGreenDepthOpen));
 }
 
-function renderShotListToggle(totalShots) {
-  const showToggle = totalShots > 1;
-  elements.toggleShotListButton.classList.toggle("hidden", !showToggle);
-  elements.toggleShotListButton.setAttribute("aria-expanded", String(state.isShotListExpanded));
-}
-
 function renderAll() {
   renderAppVisibility();
   if (!isLoggedIn()) {
-    elements.usernameInput.value = "";
-    hideMessage(elements.exportResult);
-    setFieldError(elements.shotDistanceError);
-    state.isMenuOpen = false;
     renderMenuState();
+    hideMessage(elements.profileMessage);
+    hideMessage(elements.exportResult);
     return;
   }
-
   renderProfile();
   renderCurrentPageTitle();
   renderAppTabs();
@@ -1083,30 +993,112 @@ function renderAll() {
   renderRecentRounds();
 }
 
-function downloadCsvFile(filename, content) {
-  const blob = new Blob(["\ufeff" + content], { type: "text/csv;charset=utf-8;" });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = filename;
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  setTimeout(() => URL.revokeObjectURL(url), 5000);
-  return url;
+function handleLogin() {
+  const username = normalizeUsername(elements.usernameInput.value);
+  const error = validateUsername(username);
+  if (error) {
+    showMessage(elements.loginMessage, error, "is-error");
+    return;
+  }
+  hideMessage(elements.loginMessage);
+  ensureUserInIndex(username);
+  applyUserData(loadUserData(username));
+  state.activeAppPage = "course";
+  state.pendingCourseId = state.profile.selectedCourseId;
+  state.pendingTeeId = state.profile.selectedTeeId;
+  state.isMenuOpen = false;
+  state.isCourseDetailsOpen = false;
+  saveCurrentUserData();
+  renderAll();
+  showMessage(elements.profileMessage, `\u5df2\u767b\u5165 ${username}\u3002`, "is-info");
+}
+
+function handleConfirmShot() {
+  const hole = currentHole();
+  state.saveHoleNextHint = "";
+  if (hole.lastEstimate && hole.lastEstimate.estimatedShotsToGreen) {
+    setFieldError(elements.shotDistanceError, "\u5df2\u9032\u5165\u679c\u5dba\uff0c\u4e0d\u7528\u518d\u8f38\u5165\u8ddd\u96e2\u3002");
+    return;
+  }
+  const error = validateShotInput();
+  if (error) {
+    setFieldError(elements.shotDistanceError, error);
+    return;
+  }
+  setFieldError(elements.shotDistanceError);
+  hole.shotDistances.push(Number(elements.shotDistanceInput.value));
+  hole.savedRecord = null;
+  state.isShotListExpanded = false;
+  refreshEstimate();
+}
+
+function handleSaveHoleRecord() {
+  const hole = currentHole();
+  const trajectory = calculateTrajectory(hole);
+  const lastStep = trajectory[trajectory.length - 1];
+  if (!lastStep || !lastStep.completed) {
+    return;
+  }
+  hole.savedRecord = {
+    shots: lastStep.shotNumber,
+    resultText: lastStep.outcome
+  };
+
+  const pageEndIndex = state.page === "front" ? 8 : 17;
+  if (state.selectedHoleIndex < pageEndIndex) {
+    state.selectedHoleIndex += 1;
+    state.saveHoleNextHint = `\u5df2\u5207\u63db\u81f3\u7b2c ${state.selectedHoleIndex + 1} \u6d1e`;
+  } else {
+    state.saveHoleNextHint = "";
+  }
+  state.isShotListExpanded = false;
+
+  saveCurrentUserData();
+  renderAll();
+}
+
+function saveCurrentRoundHistory() {
+  const config = getRoundSaveConfig();
+  const holes = getRoundSaveHoles().map(cloneHoleState);
+  const round = {
+    id: createRoundId(),
+    date: new Date().toISOString(),
+    courseId: currentCourseId(),
+    courseName: currentCourseName(),
+    teeName: currentTeeName(),
+    roundMode: config.mode,
+    roundLabel: config.label,
+    totalShots: getTotalShotsForHoles(holes),
+    holes
+  };
+  state.rounds = [round, ...state.rounds].slice(0, 50);
+  state.selectedRoundId = "";
+  saveCurrentUserData();
+  return round;
+}
+
+function resetCurrentCourseProgress() {
+  const tee = getTeeDefinition();
+  const holes = currentCourseHoles();
+  const config = getRoundSaveConfig();
+  for (let index = config.start; index < config.end; index += 1) {
+    holes[index] = makeHoleState(tee.holes[index]);
+  }
+  state.page = config.mode === "back" ? "back" : "front";
+  state.selectedHoleIndex = config.start;
+  state.isShotListExpanded = false;
 }
 
 function buildRoundCsvContent(round) {
   const rows = [
-    ["帳號", state.profile.username],
-    ["模擬球場", round.courseName],
-    ["Tee", round.teeName || "White tee"],
-    ["範圍", round.roundLabel || "18 洞"],
-    ["日期", formatRoundDate(round.date)],
-    ["已完成洞數", String(round.savedHoleCount)],
-    ["總揮桿", String(round.totalShots)],
+    ["\u5e33\u865f", state.profile.username],
+    ["\u7403\u5834", round.courseName],
+    ["Tee", round.teeName],
+    ["\u7bc4\u570d", round.roundLabel],
+    ["\u65e5\u671f", formatRoundDate(round.date)],
+    ["\u7e3d\u687f", String(round.totalShots)],
     [],
-    ["洞別", "Par", "球洞長度(碼)", "果嶺深度(碼)", "揮桿次數", "逐桿距離(碼)"]
+    ["\u6d1e\u5225", "Par", "\u7403\u6d1e\u9577\u5ea6(\u78bc)", "\u679c\u5dba\u6df1\u5ea6(\u78bc)", "\u63ee\u687f\u6b21\u6578", "\u9010\u687f\u8ddd\u96e2(\u78bc)"]
   ];
 
   round.holes.forEach((hole) => {
@@ -1121,7 +1113,7 @@ function buildRoundCsvContent(round) {
   });
 
   return rows
-    .map((row) => row.map((cell) => `"${String(cell ?? "").replace(/"/g, '""')}"`).join(","))
+    .map((row) => row.map((cell) => `"${String(cell ?? "").replace(/"/g, "\"\"")}"`).join(","))
     .join("\r\n");
 }
 
@@ -1130,130 +1122,25 @@ function handleRoundExport(roundId) {
   if (!round) {
     return;
   }
-
-  const csvContent = buildRoundCsvContent(round);
-  const safeUsername = state.profile.username.replace(/[\\/:*?"<>|]/g, "_");
-  const safeCourseName = round.courseName.replace(/[\\/:*?"<>|]/g, "_");
-  const safeDate = round.date.slice(0, 10);
-  const filename = `${safeUsername}-${safeCourseName}-${safeDate}-round.csv`;
-  const url = downloadCsvFile(filename, csvContent);
-  elements.exportResult.innerHTML = `CSV 已建立：<a href="${url}" download="${filename}">${filename}</a>。如果剛剛沒看到下載，請點這個檔名再下載一次。`;
-  elements.exportResult.className = "message is-info";
-  elements.exportResult.classList.remove("hidden");
-
-}
-
-function handleLogin() {
-  const username = normalizeUsername(elements.usernameInput.value);
-  const errorMessage = validateUsername(username);
-  if (errorMessage) {
-    showMessage(elements.loginMessage, errorMessage, "is-error");
-    return;
-  }
-
-  ensureUserInIndex(username);
-  applyUserData(loadUserData(username));
-  setStorageItem(CURRENT_USER_KEY, username);
-  saveCurrentUserData();
-  hideMessage(elements.loginMessage);
-  hideMessage(elements.exportResult);
-  renderAll();
-  showMessage(elements.profileMessage, `已登入 ${username}，資料會依帳號與球場分開儲存。`, "is-info");
-}
-
-function handleConfirmShot() {
-  syncGreenDepthToState();
-  const hole = currentHole();
-  const shotDistance = sanitizeNumber(elements.shotDistanceInput.value);
-
-  if (hole.lastEstimate && hole.lastEstimate.estimatedShotsToGreen) {
-    setFieldError(elements.shotDistanceError, "已進入果嶺，不用再輸入距離。");
-    elements.shotDistanceInput.value = "";
-    return;
-  }
-
-  if (!Number.isFinite(hole.greenDepth) || hole.greenDepth <= 0) {
-    setFieldError(elements.shotDistanceError, "請先設定有效的果嶺深度。");
-    return;
-  }
-
-  if (!Number.isFinite(shotDistance) || shotDistance <= 0) {
-    setFieldError(elements.shotDistanceError, "請輸入大於 0 的擊球距離。");
-    return;
-  }
-
-  if (shotDistance > 500) {
-    setFieldError(elements.shotDistanceError, "單桿擊球距離不能超過 500 碼。");
-    return;
-  }
-
-  setFieldError(elements.shotDistanceError);
-  hole.shotDistances.push(shotDistance);
-  hole.savedRecord = null;
-  state.isShotListExpanded = false;
-  elements.shotDistanceInput.value = "";
-  refreshEstimate();
-}
-
-function handleSaveHoleRecord() {
-  const hole = currentHole();
-  if (!hole.lastEstimate || !hole.lastEstimate.estimatedShotsToGreen) {
-    return;
-  }
-
-  const trajectory = getTrajectory(hole);
-  const lastStep = trajectory[trajectory.length - 1];
-  hole.savedRecord = {
-    shots: hole.lastEstimate.estimatedShotsToGreen,
-    resultText: lastStep ? lastStep.outcome : "已完成",
-    savedAt: new Date().toISOString()
-  };
-
-  saveCurrentUserData();
-  renderHoleList();
-  renderHoleEditor();
-  renderOverview();
-  renderRoundSavePanel();
-}
-
-function handleCourseChange() {
-  state.pendingCourseId = elements.courseSelect.value;
-  state.isCourseDetailsOpen = false;
-  renderCourseSelect();
-  renderCourseDetails();
-}
-
-function handleConfirmCourseSelection() {
-  const nextCourseId = state.pendingCourseId;
-  if (!COURSES.some((course) => course.id === nextCourseId)) {
-    showMessage(elements.profileMessage, "請先選擇球場。", "is-warn");
-    return;
-  }
-
-  state.profile.selectedCourseId = nextCourseId;
-  state.page = "front";
-  state.selectedHoleIndex = 0;
-  if (!state.courses[nextCourseId]) {
-    state.courses[nextCourseId] = createEmptyCourseState(getCourseDefinition(nextCourseId));
-  }
-
-  hideMessage(elements.exportResult);
-  saveCurrentUserData();
-  state.activeAppPage = "play";
-  renderAll();
-  showMessage(elements.profileMessage, `已選擇 ${currentCourseName()}，已切換到紀錄桿數。`, "is-info");
+  const blob = new Blob(["\ufeff" + buildRoundCsvContent(round)], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `${round.courseName}-${round.teeName}-${round.date.slice(0, 10)}.csv`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  setTimeout(() => URL.revokeObjectURL(url), 5000);
+  showMessage(elements.exportResult, "CSV \u5df2\u532f\u51fa\u3002", "is-info");
 }
 
 function bindEvents() {
   elements.loginButton.addEventListener("click", handleLogin);
   elements.backButton.addEventListener("click", () => {
-    const previousPageId = previousAppPageId();
-    if (!previousPageId) {
-      return;
+    const previous = previousAppPageId();
+    if (previous) {
+      setActiveAppPage(previous);
     }
-
-    setActiveAppPage(previousPageId);
-    renderCurrentPageTitle();
   });
   elements.menuButton.addEventListener("click", () => {
     state.isMenuOpen = !state.isMenuOpen;
@@ -1269,198 +1156,164 @@ function bindEvents() {
   });
   elements.appTabs.addEventListener("click", (event) => {
     const tab = event.target.closest("[data-app-page]");
-    if (!tab) {
-      return;
+    if (tab) {
+      setActiveAppPage(tab.dataset.appPage);
     }
-
-    setActiveAppPage(tab.dataset.appPage);
   });
-
   elements.logoutButton.addEventListener("click", () => {
     state.profile.username = "";
     state.profile.selectedCourseId = DEFAULT_COURSE_ID;
+    state.profile.selectedTeeId = DEFAULT_TEE_ID;
+    state.activeAppPage = "course";
     state.pendingCourseId = DEFAULT_COURSE_ID;
-    state.courses = createDefaultCourseMap();
+    state.pendingTeeId = DEFAULT_TEE_ID;
+    state.courses = createEmptyCourseMap();
     state.rounds = [];
     state.selectedRoundId = "";
     state.isRoundHistoryExpanded = false;
     state.isMenuOpen = false;
-    removeStorageItem(CURRENT_USER_KEY);
-    hideMessage(elements.profileMessage);
-    hideMessage(elements.exportResult);
+    state.isCourseDetailsOpen = false;
+    state.page = "front";
+    state.selectedHoleIndex = 0;
+    state.saveHoleNextHint = "";
+    removeStorage(CURRENT_USER_KEY);
     renderAll();
   });
 
-  elements.saveRoundButton.addEventListener("click", () => {
-    if (!canSaveRoundHistory()) {
-      showMessage(elements.saveRoundMessage, `尚未完成${getRoundSaveConfig().label}的 savedRecord，完成後才能儲存本次 round。`, "is-warn");
-      return;
-    }
-
-    const shouldSaveRound = window.confirm(`確認儲存 ${getRoundSaveConfig().label} 後，桿數就無法修改了。要儲存本次 Round 嗎？`);
-    if (!shouldSaveRound) {
-      return;
-    }
-
-    const savedConfig = getRoundSaveConfig();
-    const savedRound = saveCurrentRoundHistory();
-    if (!savedRound.ok) {
-      showMessage(elements.saveRoundMessage, savedRound.message, "is-warn");
-      return;
-    }
-
-    resetCurrentCourseProgress();
-    saveCurrentUserData();
-    state.activeAppPage = "history";
-    renderAll();
-    showMessage(elements.exportResult, `已儲存${savedConfig.label} round。`, "is-info");
+  elements.courseSelect.addEventListener("change", () => {
+    state.pendingCourseId = elements.courseSelect.value;
+    state.pendingTeeId = getCourseDefinition(state.pendingCourseId).tees[0].id;
+    state.isCourseDetailsOpen = false;
+    renderCourseSelect();
+    renderCourseDetails();
   });
-  elements.courseSelect.addEventListener("change", handleCourseChange);
-  elements.confirmCourseButton.addEventListener("click", handleConfirmCourseSelection);
+  elements.teeTabs.forEach((button) => {
+    button.addEventListener("click", () => {
+      state.pendingTeeId = button.dataset.tee;
+      state.isCourseDetailsOpen = false;
+      renderCourseSelect();
+      renderCourseDetails();
+    });
+  });
   elements.courseDetailsButton.addEventListener("click", () => {
-    if (!state.pendingCourseId) {
-      return;
-    }
     state.isCourseDetailsOpen = !state.isCourseDetailsOpen;
     renderCourseDetails();
   });
-  elements.toggleGreenDepthButton.addEventListener("click", () => {
-    state.isGreenDepthOpen = !state.isGreenDepthOpen;
-    renderGreenDepthPanel();
-  });
-  elements.toggleShotListButton.addEventListener("click", () => {
-    state.isShotListExpanded = !state.isShotListExpanded;
-    renderShotList();
-  });
-  elements.roundSaveModeTabs.forEach((tab) => {
-    tab.addEventListener("click", () => {
-      state.roundSaveMode = tab.dataset.roundSaveMode || "full";
-      renderRoundSavePanel();
-      renderOverview();
-    });
-  });
-  elements.toggleRoundHistoryButton.addEventListener("click", () => {
-    state.isRoundHistoryExpanded = !state.isRoundHistoryExpanded;
-    renderRecentRounds();
+  elements.confirmCourseButton.addEventListener("click", () => {
+    state.profile.selectedCourseId = state.pendingCourseId;
+    state.profile.selectedTeeId = state.pendingTeeId;
+    state.page = "front";
+    state.selectedHoleIndex = 0;
+    saveCurrentUserData();
+    setActiveAppPage("play");
   });
 
   elements.tabs.forEach((tab) => {
     tab.addEventListener("click", () => {
       state.page = tab.dataset.page;
+      state.selectedHoleIndex = state.page === "front" ? Math.min(state.selectedHoleIndex, 8) : Math.max(state.selectedHoleIndex, 9);
       state.isShotListExpanded = false;
-      if (state.page === "front" && state.selectedHoleIndex > 8) {
-        state.selectedHoleIndex = 0;
-      }
-      if (state.page === "back" && state.selectedHoleIndex < 9) {
-        state.selectedHoleIndex = 9;
-      }
-      renderHoleTabs();
-      renderHoleList();
-      renderHoleEditor();
-      renderOverview();
+      renderAll();
     });
   });
-
   elements.holeList.addEventListener("click", (event) => {
     const button = event.target.closest("[data-index]");
-    if (!button) {
-      return;
+    if (button) {
+      state.selectedHoleIndex = Number(button.dataset.index);
+      state.isShotListExpanded = false;
+      renderHoleEditor();
+      renderHoleList();
     }
-
-    state.selectedHoleIndex = Number(button.dataset.index);
-    state.isShotListExpanded = false;
-    renderHoleList();
-    renderHoleEditor();
   });
-
+  elements.toggleGreenDepthButton.addEventListener("click", () => {
+    state.isGreenDepthOpen = !state.isGreenDepthOpen;
+    renderGreenDepthPanel();
+  });
+  elements.greenDepthInput.addEventListener("input", refreshEstimate);
   elements.confirmShotButton.addEventListener("click", handleConfirmShot);
-  elements.saveHoleRecordButton.addEventListener("click", handleSaveHoleRecord);
-  elements.goSummaryButton.addEventListener("click", () => {
-    setActiveAppPage("summary");
-  });
-
   elements.shotDistanceInput.addEventListener("keydown", (event) => {
     if (event.key === "Enter") {
       event.preventDefault();
       handleConfirmShot();
     }
   });
-
-  elements.shotDistanceInput.addEventListener("input", () => {
-    const shotDistance = sanitizeNumber(elements.shotDistanceInput.value);
-    if (shotDistance !== "" && shotDistance > 500) {
-      setFieldError(elements.shotDistanceError, "單桿擊球距離不能超過 500 碼。");
-      return;
-    }
-
-    setFieldError(elements.shotDistanceError);
+  elements.shotDistanceInput.addEventListener("input", () => setFieldError(elements.shotDistanceError));
+  elements.toggleShotListButton.addEventListener("click", () => {
+    state.isShotListExpanded = !state.isShotListExpanded;
+    renderShotList();
   });
-
-  elements.resetHoleButton.addEventListener("click", () => {
-    const shouldReset = window.confirm("要清除此洞的所有擊球紀錄嗎？");
-    if (!shouldReset) {
-      return;
-    }
-
-    const course = getCourseDefinition();
-    currentCourseHoles()[state.selectedHoleIndex] = makeDefaultHoleConfig(course.holes[state.selectedHoleIndex]);
-    state.isShotListExpanded = false;
-    elements.shotDistanceInput.value = "";
-    saveCurrentUserData();
-    renderHoleEditor();
-    renderHoleList();
-    renderOverview();
-    renderRoundSavePanel();
-  });
-
   elements.shotList.addEventListener("click", (event) => {
-    const removeButton = event.target.closest(".remove-shot");
-    if (!removeButton) {
+    const button = event.target.closest(".remove-shot");
+    if (!button) {
       return;
     }
-
-    const shotIndex = Number(removeButton.dataset.shotIndex);
-    currentHole().shotDistances.splice(shotIndex, 1);
+    currentHole().shotDistances.splice(Number(button.dataset.shotIndex), 1);
     currentHole().savedRecord = null;
-    if (currentHole().shotDistances.length <= 1) {
-      state.isShotListExpanded = false;
-    }
     refreshEstimate();
   });
+  elements.resetHoleButton.addEventListener("click", () => {
+    if (!window.confirm("\u78ba\u5b9a\u8981\u6e05\u9664\u9019\u6d1e\u7684\u7d00\u9304\u55ce\uff1f")) {
+      return;
+    }
+    const tee = getTeeDefinition();
+    currentCourseHoles()[state.selectedHoleIndex] = makeHoleState(tee.holes[state.selectedHoleIndex]);
+    saveCurrentUserData();
+    renderAll();
+  });
+  elements.saveHoleRecordButton.addEventListener("click", handleSaveHoleRecord);
+  elements.goSummaryButton.addEventListener("click", () => setActiveAppPage("summary"));
 
+  elements.roundSaveModeTabs.forEach((tab) => {
+    tab.addEventListener("click", () => {
+      state.roundSaveMode = tab.dataset.roundSaveMode || "full";
+      renderOverview();
+      renderRoundSavePanel();
+    });
+  });
+  elements.saveRoundButton.addEventListener("click", () => {
+    if (!canSaveRoundHistory()) {
+      return;
+    }
+    saveCurrentRoundHistory();
+    resetCurrentCourseProgress();
+    saveCurrentUserData();
+    setActiveAppPage("history");
+  });
+
+  elements.toggleRoundHistoryButton.addEventListener("click", () => {
+    state.isRoundHistoryExpanded = !state.isRoundHistoryExpanded;
+    renderRecentRounds();
+  });
   elements.recentRoundsList.addEventListener("click", (event) => {
     const deleteButton = event.target.closest("[data-round-delete]");
     if (deleteButton) {
-      const roundId = deleteButton.dataset.roundDelete;
-      const shouldDelete = window.confirm("要刪除這筆 round 歷史紀錄嗎？");
-      if (!shouldDelete) {
+      const round = getRoundHistoryById(deleteButton.dataset.roundDelete);
+      const roundLabel = round ? `${round.courseName} ${round.teeName} ${round.roundLabel}` : "\u9019\u7b46 round";
+      if (!window.confirm(`\u78ba\u5b9a\u8981\u522a\u9664${roundLabel}\u55ce\uff1f`)) {
         return;
       }
-
-      deleteRoundHistory(roundId);
+      state.rounds = state.rounds.filter((round) => round.id !== deleteButton.dataset.roundDelete);
+      if (state.selectedRoundId === deleteButton.dataset.roundDelete) {
+        state.selectedRoundId = "";
+      }
+      saveCurrentUserData();
       renderRecentRounds();
       return;
     }
-
     const exportButton = event.target.closest("[data-round-export]");
     if (exportButton) {
       handleRoundExport(exportButton.dataset.roundExport);
       return;
     }
-
     const detailButton = event.target.closest("[data-round-view]");
-    if (!detailButton) {
-      return;
+    if (detailButton) {
+      state.selectedRoundId = state.selectedRoundId === detailButton.dataset.roundView ? "" : detailButton.dataset.roundView;
+      renderRecentRounds();
     }
-
-    const roundId = detailButton.dataset.roundView;
-    state.selectedRoundId = state.selectedRoundId === roundId ? "" : roundId;
-    renderRecentRounds();
   });
-
-  elements.greenDepthInput.addEventListener("input", refreshEstimate);
 }
 
+initStaticText();
 loadSession();
 bindEvents();
 renderAll();
