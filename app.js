@@ -810,7 +810,7 @@ function renderShotList() {
   elements.emptyShotNote.classList.toggle("hidden", trajectory.length > 0);
   elements.toggleShotListButton.classList.toggle("hidden", trajectory.length <= 1);
   elements.toggleShotListButton.setAttribute("aria-expanded", String(state.isShotListExpanded));
-  elements.toggleShotListButton.querySelector(".toggle-arrow").textContent = state.isShotListExpanded ? "\u25b4" : "\u25be";
+  elements.toggleShotListButton.querySelector(".toggle-arrow").textContent = "\u25be";
   elements.shotList.classList.toggle("is-expanded", state.isShotListExpanded);
 
   elements.shotList.innerHTML = visibleTrajectory.map((step) => `
@@ -942,7 +942,7 @@ function renderRecentRounds() {
   elements.recentRoundsEmpty.classList.toggle("hidden", rounds.length > 0);
   elements.toggleRoundHistoryButton.classList.toggle("hidden", allRounds.length <= 1);
   elements.toggleRoundHistoryButton.setAttribute("aria-expanded", String(state.isRoundHistoryExpanded));
-  elements.toggleRoundHistoryButton.querySelector(".toggle-arrow").textContent = state.isRoundHistoryExpanded ? "\u25b4" : "\u25be";
+  elements.toggleRoundHistoryButton.querySelector(".toggle-arrow").textContent = "\u25be";
 
   elements.recentRoundsList.innerHTML = rounds.map((round) => `
     <div class="round-history-item ${round.id === state.selectedRoundId ? "active" : ""}">

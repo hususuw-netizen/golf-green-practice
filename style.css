@@ -453,6 +453,11 @@ select {
   display: inline-block;
   font-size: var(--font-xl);
   line-height: 1;
+  transition: transform 0.18s ease;
+}
+
+.toggle-icon-button[aria-expanded="true"] .toggle-arrow {
+  transform: rotate(180deg);
 }
 
 .field {
