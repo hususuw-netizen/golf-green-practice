@@ -1274,6 +1274,10 @@ function bindEvents() {
     if (!canSaveRoundHistory()) {
       return;
     }
+    const config = getRoundSaveConfig();
+    if (!window.confirm(`確定要儲存${config.label}本次紀錄嗎？`)) {
+      return;
+    }
     saveCurrentRoundHistory();
     resetCurrentCourseProgress();
     saveCurrentUserData();
