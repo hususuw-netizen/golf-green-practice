@@ -12,7 +12,7 @@
       <div class="hero-copy">
         <p class="eyebrow">Practice to Course</p>
         <h1>高爾夫上果嶺紀錄工具</h1>
-        <p class="hero-text">依帳號、球場與 tee 分開儲存逐桿紀錄，支援 18 洞總表與歷史 round 匯出。</p>
+        <p class="hero-text">依帳號、球場與 tee 分開儲存紀錄，支援 18 洞逐桿紀錄、總表與歷史匯出。</p>
       </div>
     </section>
 
@@ -63,8 +63,12 @@
         <section class="panel course-panel">
           <div class="section-head">
             <div>
-              <h2>選擇球場</h2>
+              <h2>選擇模式</h2>
             </div>
+          </div>
+          <div id="modeSwitch" class="switch-row mode-switch" role="tablist" aria-label="選擇功能模式">
+            <button class="range-tab mode-tab active" type="button" data-mode="simulation">模擬球場</button>
+            <button class="range-tab mode-tab" type="button" data-mode="score">純記桿數</button>
           </div>
           <div class="field">
             <select id="courseSelect"></select>
@@ -161,6 +165,79 @@
         </div>
       </section>
 
+      <section id="scorePlayPage" class="app-page">
+        <section class="panel selector-panel">
+          <div class="section-head">
+            <div>
+              <p id="scoreHoleSelectorSubtitle" class="selector-subtitle">純記桿數模式</p>
+            </div>
+            <div class="switch-row hole-page-switch">
+              <button class="range-tab score-hole-page-tab active" type="button" data-score-page="front">前 9</button>
+              <button class="range-tab score-hole-page-tab" type="button" data-score-page="back">後 9</button>
+            </div>
+          </div>
+          <div id="scoreHoleList" class="hole-grid"></div>
+        </section>
+
+        <section class="panel hole-panel">
+          <div class="play-card-grid">
+            <div class="play-card current-hole-card">
+              <h2 id="scoreEditorTitle">第 1 洞</h2>
+              <div class="hole-badges">
+                <div class="badge-card">
+                  <span>Par</span>
+                  <strong id="scoreParValue">2</strong>
+                </div>
+              </div>
+            </div>
+
+            <div class="play-card shot-entry-card">
+              <div class="section-head">
+                <div>
+                  <h2>輸入本洞桿數</h2>
+                </div>
+              </div>
+              <div class="field">
+                <div id="scoreShotPresetGrid" class="score-shot-preset-grid">
+                  <button class="score-shot-preset" type="button" data-score-shot="1">1</button>
+                  <button class="score-shot-preset" type="button" data-score-shot="2">2</button>
+                  <button class="score-shot-preset" type="button" data-score-shot="3">3</button>
+                  <button class="score-shot-preset" type="button" data-score-shot="4">4</button>
+                  <button class="score-shot-preset" type="button" data-score-shot="5">5</button>
+                  <button class="score-shot-preset" type="button" data-score-shot="6">6</button>
+                  <button class="score-shot-preset" type="button" data-score-shot="7">7</button>
+                  <button class="score-shot-preset" type="button" data-score-shot="8">8</button>
+                  <button id="scoreMoreShotsButton" class="score-shot-preset score-shot-preset-more" type="button">更多</button>
+                </div>
+                <div id="scoreCustomShotsField" class="hidden">
+                  <input id="scoreShotsInput" type="number" min="1" max="20" placeholder="例如：9">
+                </div>
+                <div id="scoreShotsError" class="field-error hidden"></div>
+              </div>
+              <button id="scoreSaveHoleButton" class="btn btn-primary full-width" type="button">儲存本洞桿數</button>
+            </div>
+
+            <div class="play-card shot-record-card">
+              <div class="shot-toolbar">
+                <div>
+                  <h2>本洞紀錄</h2>
+                </div>
+                <div class="shot-toolbar-actions">
+                  <button id="scoreResetHoleButton" class="btn btn-danger hole-reset-button" type="button">清除此洞</button>
+                </div>
+              </div>
+              <div id="scoreHoleNote" class="empty-note">尚未儲存本洞桿數。</div>
+            </div>
+          </div>
+        </section>
+
+        <div class="save-hole-bar">
+          <span id="scoreSaveHoleHint">輸入本洞桿數後即可儲存，系統會自動切換下一洞。</span>
+          <span id="scoreSaveHoleNextHint" class="save-hole-next-hint hidden"></span>
+          <button id="scoreGoSummaryButton" class="btn btn-soft full-width" type="button">前往總表</button>
+        </div>
+      </section>
+
       <section id="summaryPage" class="app-page">
         <section class="panel round-save-panel">
           <div class="section-head">
@@ -198,12 +275,47 @@
         </section>
       </section>
 
+      <section id="scoreSummaryPage" class="app-page">
+        <section class="panel round-save-panel">
+          <div class="section-head">
+            <div>
+              <h2>儲存本次 Round</h2>
+            </div>
+          </div>
+          <div class="switch-row round-mode-switch" role="tablist" aria-label="純記桿數儲存範圍">
+            <button class="range-tab score-round-mode-tab" type="button" data-score-round-save-mode="front">前 9</button>
+            <button class="range-tab score-round-mode-tab" type="button" data-score-round-save-mode="back">後 9</button>
+            <button class="range-tab score-round-mode-tab active" type="button" data-score-round-save-mode="full">18 洞</button>
+          </div>
+          <div class="round-save-grid">
+            <div class="stat-card">
+              <span>完成狀態</span>
+              <strong id="scoreRoundSaveStatusValue">0 / 18</strong>
+              <div class="round-save-course-value">純記桿數模式</div>
+            </div>
+          </div>
+          <button id="scoreSaveRoundButton" class="btn btn-success full-width" type="button">儲存本次 Round</button>
+          <div id="scoreSaveRoundMessage" class="message is-info hidden"></div>
+        </section>
+
+        <section class="panel overview-panel">
+          <div class="section-head">
+            <div>
+              <h2 id="scoreOverviewTitle">18 洞紀錄</h2>
+            </div>
+            <div class="overview-total">
+              <span>總揮桿</span>
+              <strong id="scoreTotalShotsValue">0 / 36</strong>
+            </div>
+          </div>
+          <div id="scoreOverviewList" class="overview-list"></div>
+        </section>
+      </section>
+
       <section id="historyPage" class="app-page">
         <section class="panel round-history-panel">
           <div class="section-head">
-            <div>
-              <h2>歷史紀錄</h2>
-            </div>
+            <div></div>
             <button id="toggleRoundHistoryButton" class="toggle-icon-button hidden" type="button" aria-label="展開歷史紀錄" aria-expanded="false">
               <span class="toggle-arrow">▾</span>
             </button>
@@ -216,6 +328,11 @@
     </section>
   </main>
 
+  <script src="page-course.js"></script>
+  <script src="page-play.js"></script>
+  <script src="page-summary.js"></script>
+  <script src="page-history.js"></script>
+  <script src="page-score.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
