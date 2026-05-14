@@ -1016,6 +1016,11 @@ select {
   font-weight: 600;
 }
 
+.history-warning {
+  margin-top: 0;
+  margin-bottom: 12px;
+}
+
 .round-history-list,
 .round-detail-hole-list {
   display: grid;
